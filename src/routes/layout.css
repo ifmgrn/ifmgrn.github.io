@@ -1,0 +1,59 @@
+/*@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";*/
+
+.Gás {
+	--name-color: #a12d1f;
+}
+
+.Líquido {
+	--name-color: #3d7ba3;
+}
+
+.Sólido {
+	--name-color: initial;
+}
+
+.Desconhecido {
+	--name-color: #f1ea66;
+}
+
+.Não-Metal {
+	--color: #3996ea;
+}
+
+.Metal-Alcalino {
+	--color: #e94f3e;
+}
+
+.Metal-Alcalino-Terroso {
+	--color: #f88a26;
+}
+
+.Metal-de-Transição {
+	--color: #ffd30b;
+}
+
+.Metal-Pós-Transição {
+	--color: #36db7c;
+}
+
+.Semimetal {
+	--color: #2da78d;
+}
+
+.Halogênio {
+	--color: #f077a2;
+}
+
+.Gás-Nobre {
+	--color: #a35fc4;
+}
+
+.Lantanídeo {
+	--color: #2b9e5e;
+}
+
+.Actinídeo {
+	--color: #32b79a;
+}

@@ -1,0 +1,14 @@
+{
+	"files.associations": {
+		"*.css": "tailwindcss"
+	},
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.biome": "explicit",
+		"source.organizeImports.biome": "explicit"
+	},
+	"editor.wordWrap": "on",
+	"editor.defaultFormatter": "biomejs.biome",
+	"javascript.preferences.importModuleSpecifier": "relative",
+	"typescript.preferences.importModuleSpecifier": "relative"
+}

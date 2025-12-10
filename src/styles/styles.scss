@@ -1,0 +1,33 @@
+body.reaction {
+	--block-spacing-vertical: 0;
+}
+
+body.home header,
+main.periodic-table {
+	text-align: center;
+}
+
+nav {
+	display: flex;
+	justify-content: space-between; /* left and right sides */
+	align-items: center;
+	max-width: 1000px; /* optional, center the nav */
+	margin: 0 auto;     /* horizontally center */
+	padding: 0;
+
+	* {
+		padding: 0.25rem 1.25rem;
+	}
+}
+
+main {
+	margin-top: var(--block-spacing-vertical);
+}
+
+header > .top-art-deco-frame:first-child {
+	top: 0;
+}
+
+textarea.carta-font-code {
+	color: var(--color) !important;
+}

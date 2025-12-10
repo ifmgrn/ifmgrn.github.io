@@ -1,0 +1,164 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true,
+		"defaultBranch": "main"
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": ["**", "!!**/bun.lock", "!!**/dist", "!**/.svelte-kit"]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineEnding": "auto"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"a11y": {
+				"noNoninteractiveElementInteractions": "on"
+			},
+			"complexity": {
+				"noExcessiveCognitiveComplexity": "on",
+				"noForEach": "info",
+				"noImplicitCoercions": "on",
+				"noUselessStringConcat": "on",
+				"useSimplifiedLogicExpression": "on"
+			},
+			"correctness": {
+				"noUndeclaredDependencies": "on",
+				"noUndeclaredVariables": "on",
+				"useImageSize": "on",
+				"useImportExtensions": "on"
+			},
+			"nursery": {
+				"noDeprecatedImports": "on",
+				"noForIn": "error",
+				"noImportCycles": "on",
+				"noParametersOnlyUsedInRecursion": "on",
+				"noShadow": "on",
+				"noSyncScripts": "on",
+				"noUnnecessaryConditions": "on",
+				"noUnusedExpressions": "on",
+				"noUselessCatchBinding": "on",
+				"noUselessUndefined": "on",
+				"useArraySortCompare": "warn",
+				"useConsistentArrowReturn": "info",
+				"useFind": "warn",
+				"useMaxParams": "on",
+				"useSortedClasses": "on"
+			},
+			"performance": {
+				"noAwaitInLoops": "on",
+				"noBarrelFile": "on",
+				"noDelete": "on",
+				"useTopLevelRegex": "info"
+			},
+			"security": {
+				"noSecrets": {
+					"level": "error",
+					"options": {
+						"entropyThreshold": 50
+					}
+				}
+			},
+			"style": {
+				"noCommonJs": "on",
+				"noInferrableTypes": "on",
+				"noMagicNumbers": "on",
+				"noNegationElse": "on",
+				"noNestedTernary": "on",
+				"noParameterAssign": "on",
+				"noParameterProperties": "info",
+				"noUnusedTemplateLiteral": "info",
+				"noUselessElse": "on",
+				"noYodaExpression": "on",
+				"useAsConstAssertion": "on",
+				"useAtIndex": "on",
+				"useCollapsedElseIf": "on",
+				"useCollapsedIf": "on",
+				"useConsistentArrayType": "on",
+				"useConsistentBuiltinInstantiation": "on",
+				"useConsistentObjectDefinitions": "info",
+				"useDefaultParameterLast": "info",
+				"useExportsLast": "on",
+				"useFilenamingConvention": {
+					"level": "on",
+					"options": {
+						"filenameCases": ["camelCase", "PascalCase"]
+					}
+				},
+				"useForOf": "on",
+				"useGroupedAccessorPairs": "on",
+				"useNamingConvention": "on",
+				"useNumberNamespace": "on",
+				"useNumericSeparators": "on",
+				"useObjectSpread": "on",
+				"useShorthandAssign": "on",
+				"useThrowOnlyError": "on",
+				"useUnifiedTypeSignatures": "on"
+			},
+			"suspicious": {
+				"noConstantBinaryExpressions": "on",
+				"noEmptyBlockStatements": "info",
+				"noEmptyInterface": "info",
+				"noUnassignedVariables": "on",
+				"useAwait": "info",
+				"useErrorMessage": "info",
+				"useNumberToFixedDigitsArgument": "info",
+				"useStaticResponseMethods": "on"
+			}
+		},
+		"domains": {
+			"project": "recommended"
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	},
+	"assist": {
+		"enabled": true,
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.svelte"],
+			"html": {
+				"formatter": {
+					"enabled": false
+				}
+			},
+			"linter": {
+				"rules": {
+					"style": {
+						"useConst": "off",
+						"useImportType": "off",
+						"useExportsLast": "off"
+					},
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					},
+					"suspicious": {
+						"noUnassignedVariables": "off"
+					}
+				}
+			}
+		}
+	]
+}
