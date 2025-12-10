@@ -69,7 +69,6 @@
 			"style": {
 				"noCommonJs": "on",
 				"noInferrableTypes": "on",
-				"noMagicNumbers": "on",
 				"noNegationElse": "on",
 				"noNestedTernary": "on",
 				"noParameterAssign": "on",
@@ -94,7 +93,19 @@
 				},
 				"useForOf": "on",
 				"useGroupedAccessorPairs": "on",
-				"useNamingConvention": "on",
+				"useNamingConvention": {
+					"level": "on",
+					"options": {
+						"conventions": [
+							{
+								"selector": {
+									"kind": "typeLike"
+								},
+								"formats": ["camelCase", "snake_case"]
+							}
+						]
+					}
+				},
 				"useNumberNamespace": "on",
 				"useNumericSeparators": "on",
 				"useObjectSpread": "on",
@@ -128,11 +139,6 @@
 			"source": {
 				"organizeImports": "on"
 			}
-		}
-	},
-	"css": {
-		"parser": {
-			"tailwindDirectives": true
 		}
 	},
 	"overrides": [

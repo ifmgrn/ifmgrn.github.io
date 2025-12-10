@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { error, redirect } from "@sveltejs/kit";
 import {
 	PUBLIC_SUAP_CLIENT_ID,
@@ -10,7 +9,7 @@ export async function GET({ cookies, locals: { isLoggedIn } }) {
 	if (await isLoggedIn())
 		error(STATUS_CODE.FORBIDDEN, "A user is already logged in.");
 
-	const state = randomUUID();
+	const state = crypto.randomUUID();
 	cookies.set("oauth_state", state, {
 		path: "/",
 		maxAge: 60 * 5,
