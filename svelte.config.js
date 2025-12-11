@@ -9,7 +9,6 @@ const config = {
 	kit: {
 		adapter: adapter({
 			runtime: "experimental_bun1.x",
-			regions: ["gru1"],
 		}),
 	},
 };

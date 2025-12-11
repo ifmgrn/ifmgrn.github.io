@@ -8,7 +8,13 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!!**/bun.lock", "!!**/dist", "!**/.svelte-kit"]
+		"includes": [
+			"**",
+			"!!**/bun.lock",
+			"!!**/dist",
+			"!**/.svelte-kit",
+			"!**/*.svelte"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -140,31 +146,5 @@
 				"organizeImports": "on"
 			}
 		}
-	},
-	"overrides": [
-		{
-			"includes": ["**/*.svelte"],
-			"html": {
-				"formatter": {
-					"enabled": false
-				}
-			},
-			"linter": {
-				"rules": {
-					"style": {
-						"useConst": "off",
-						"useImportType": "off",
-						"useExportsLast": "off"
-					},
-					"correctness": {
-						"noUnusedVariables": "off",
-						"noUnusedImports": "off"
-					},
-					"suspicious": {
-						"noUnassignedVariables": "off"
-					}
-				}
-			}
-		}
-	]
+	}
 }

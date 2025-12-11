@@ -1,24 +1,31 @@
 <script lang="ts">
-import YouTube from "../YouTube.svelte";
+	import YouTube from "../YouTube.svelte";
 
-const { reaction }: { reaction: Reaction } = $props();
+	const { reaction }: { reaction: Reaction } = $props();
 
-const title = reaction.name;
+	const title = reaction.name;
+
+	const fields = [
+		["Reação:", reaction.name],
+		["Classificações:", reaction.classifications.join(", ")],
+		["Reagentes:", reaction.reactants.join(", ")],
+		["Produtos:", reaction.products.join(", ")],
+		["Equação:", reaction.equation]
+	];
 </script>
 
-<div role="listitem" aria-label={reaction.name}>
+<div role="listitem" aria-label={reaction.name} class="reaction-item">
 	<YouTube videoId={reaction.youtube_video_id} videoTitle={title} />
 	<a href="/reacao/{reaction.id}" class="info">
-		<span class="field">Reação:</span><span class="value">{reaction.name}</span>
-		<span class="field">Classificaç{reaction.classifications.length === 1 ? "ão" : "ões"}:</span><span class="value">{reaction.classifications.join(", ")}</span>
-		<span class="field">Reagente(s):</span><span class="value">{reaction.reactants.join(", ")}</span>
-		<span class="field">Produto(s):</span><span class="value">{reaction.products.join(", ")}</span>
-		<span class="field">Equação:</span><span class="value">{reaction.equation}</span>
+		{#each fields as field}
+			<span class="field">{field[0]}</span>
+			<span class="value">{field[1]}</span>
+		{/each}
 	</a>
 </div>
 
 <style>
-	div {
+	.reaction-item {
 		display: flex;
 		flex-direction: column;
 	}

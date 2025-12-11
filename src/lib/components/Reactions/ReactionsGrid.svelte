@@ -1,17 +1,17 @@
 <script lang="ts">
-import ReactionItem from "./ReactionItem.svelte";
+	import ReactionItem from "./ReactionItem.svelte";
 
-const { reactions }: { reactions: Reaction[] } = $props();
+	const { reactions }: { reactions: Reaction[] } = $props();
 </script>
 
-<div role="list">
+<div role="list" class="reactions-grid">
 	{#each reactions as reaction}
 		<ReactionItem {reaction} />
 	{/each}
 </div>
 
 <style>
-	div {
+	.reactions-grid {
 		display: grid;
 		padding: 16px;
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

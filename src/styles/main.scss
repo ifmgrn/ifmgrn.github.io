@@ -27,7 +27,7 @@ $debug: false !default;
 	/* Defina o elemento raiz usado para estilizar <header>, <main>, <footer> com $enable-semantic-container e $enable-responsive-spacings
 	 * Padrão: body
 	 */
-	$semantic-root-element: ":is(body, body > noscript)",
+	$semantic-root-element: ":is(body, body > noscript, body > #contents)",
 
 	// Habilita <header>, <main>, <footer> dentro do $semantic-root-element como contêineres
 	$enable-semantic-container: true,

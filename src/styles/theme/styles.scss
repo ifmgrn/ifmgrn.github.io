@@ -101,19 +101,6 @@ input:not(
 	text-align: center;
 }
 
-.input-container {
-	position: relative;
-}
-
-.input-container > [role="group"] {
-	position: absolute;
-	bottom: 100%;
-	left: 50%;
-	z-index: 10;
-	transform: translateX(-50%);
-	transition: opacity var(--transition);
-}
-
 :not(li) > :is(ol, ul) {
 	&,
 	&::before {
