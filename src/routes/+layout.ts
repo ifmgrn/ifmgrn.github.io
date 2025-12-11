@@ -3,12 +3,15 @@ import {
 	createServerClient,
 	isBrowser,
 } from "@supabase/ssr";
+import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
 import {
 	PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 	PUBLIC_SUPABASE_URL,
 } from "$env/static/public";
 import { URL_PARAMS } from "$lib/consts";
 import type { LayoutLoad } from "./$types";
+
+injectSpeedInsights();
 
 export const load: LayoutLoad = async ({ fetch, data, depends, url }) => {
 	depends("supabase:auth");
