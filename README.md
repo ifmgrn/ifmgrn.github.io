@@ -1,38 +1,64 @@
-# sv
+# Website de Reações Químicas
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+![GitHub Tamanho do Repo](https://img.shields.io/github/repo-size/ifmgrn/ifmgrn.github.io?label=Tamanho%20do%20Repo&style=flat)
 
-## Creating a project
+Este repositório é um projeto escolar e contém o código-fonte por trás do [Banco de Dados de Reações Quimicas](https://ifmgrn.vercel.app/).
 
-If you're seeing this, you've probably already done this step. Congrats!
+O principal foco do projeto é disponibilizar um banco de dados de moléculas em português (brasileiro), baseado no [PubChem](https://pubchem.ncbi.nlm.nih.gov/).
 
-```sh
-# create a new project in the current directory
-npx sv create
+Além disso, ele se propõe a oferecer uma tabela periódica interativa e uma forma para o usuário catalogar reações químicas usando o formato que desejar.
 
-# create a new project in my-app
-npx sv create my-app
+Esta versão do website funciona totalmente no lado do cliente.
+
+## Guia de Instalação
+
+### Forma automatizada (recomendada caso você esteja num computador escolar)
+
+Você pode baixar e executar este [script](setup_helper.ps1) através deste comando no Powershell:
+
+```powershell
+# Defina a localização para a pasta de Downloads
+Set-Location (New-Object -ComObject Shell.Application).Namespace('shell:Downloads').Self.Path
+# Baixa o script com o nome "reacoes_quimicas.ps1"
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/ifmgrn/ifmgrn.github.io/refs/heads/main/setup_helper.ps1' -OutFile website.ps1
+# Roda o script ignorando a política de execução
+powershell -ep Bypass .\website.ps1
 ```
 
-## Developing
+O script fará o seguinte:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+- Configurará o Powershell
+  - Fará o Powershell priorizar o PATH do usuário sobre o PATH do sistema
+  - Isso permitirá com que você utilize aplicativos portáteis e atualizados na linha de comando sem depender do acesso de administrador (para atualizar os que estão no sistema)
+- Baixará o [Git](https://git-scm.com/) caso necessário
+  - Caso o Git não esteja no PATH ou não esteja atualizado, baixará o Git portátil mais recente
+  - Depois de baixá-lo, irá adicionar ele ao PATH do usuário e configurar o user.name e o user.email conforme a entrada do usuário
+- Baixará o [Bun](https://bun.com/) caso necessário
+  - Caso o Bun não esteja no PATH ou não esteja atualizado, baixará o Bun portátil e adicionará-lo ao PATH do usuário
+- Clonará o repositório e baixará suas dependências
+- Te dará a opção de baixar a versão portátil do [Visual Studio Code](https://code.visualstudio.com/) (a versão mais atualizada), e adicioná-lo ao PATH do usuário e na sua área de trabalho
 
-```sh
-npm run dev
+### Forma manual
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+Faça isso no Powershell (assumindo que você tenha Git, Node.js e pnpm instalados):
+
+```powershell
+# Clona o repositório
+git clone 'https://github.com/ifmgrn/ifmgrn.github.io'
+# Baixa as dependências do projeto
+bun install --cwd 'ifmgrn.github.io'
+# Roda um servidor local de desenvolvimento
+bun run --cwd 'ifmgrn.github.io' dev
 ```
 
-## Building
+## Documentação
 
-To create a production version of your app:
+Veja a aba ["Projetos"](https://github.com/users/ifmgrn/projects/1) do GitHub para acompanhar o progresso das tarefas e o "roadmap".
 
-```sh
-npm run build
-```
+## Contribuidores
 
-You can preview the production build with `npm run preview`.
+[John](https://github.com/ifmgrn), [Davi Almeida](), [Nicolas Samuel](), [Luiz Fernando](https://github.com/soqueroentrar).
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Licença
+
+Esse repositório está sob a licença AGPL v3. Veja o arquivo [LICENSE.txt](LICENSE.txt) para mais detalhes.
