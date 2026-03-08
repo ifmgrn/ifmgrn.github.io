@@ -1,27 +1,15 @@
-import type { LayoutServerLoad } from "./$types";
+import type { Config } from "@sveltejs/adapter-vercel";
+import { URL_PARAMS } from "$lib/consts.js";
+import { BYPASS_TOKEN } from '$env/static/private';
 
-export const load: LayoutServerLoad = async ({
-	locals: { safeGetSession },
-	cookies,
-}) => {
-	const { session, user } = await safeGetSession();
+const SEARCH_PARAMS = Object.entries(URL_PARAMS)
+	.filter(p => p[0].startsWith("SEARCH_"))
+	.map(p => p[1]);
 
-	const userDataCookie = cookies.get("user_data");
-	let userData: SuapUser | null = null;
-
-	if (userDataCookie) {
-		try {
-			userData = JSON.parse(userDataCookie);
-		} catch {
-			// invalid cookie, ignore
-			userData = null;
-		}
+export const config: Config = {
+	isr: {
+		expiration: false,
+		bypassToken: BYPASS_TOKEN,
+		allowQuery: SEARCH_PARAMS
 	}
-
-	return {
-		session,
-		user,
-		userData,
-		cookies: cookies.getAll(),
-	};
 };

@@ -167,7 +167,10 @@ export async function GET({ url, cookies, locals: { supabase, isLoggedIn } }) {
 
 	await supabase.from("suap_users").upsert(userData);
 
-	cookies.set("user_data", JSON.stringify(userData), { path: "/" });
+	cookies.set("user_data", JSON.stringify(userData), { 
+		path: "/",
+		httpOnly: false
+	});
 
 	return redirect(STATUS_CODE.FOUND, "/");
 }

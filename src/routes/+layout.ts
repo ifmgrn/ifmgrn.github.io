@@ -1,6 +1,5 @@
 import {
 	createBrowserClient,
-	createServerClient,
 	isBrowser,
 } from "@supabase/ssr";
 import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
@@ -8,14 +7,16 @@ import {
 	PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 	PUBLIC_SUPABASE_URL,
 } from "$env/static/public";
-import { URL_PARAMS } from "$lib/consts";
+import { get } from "svelte/store";
+import { user } from "$lib/stores/user";
+import { getCookie, removeCookie } from "tiny-cookie";
 import type { LayoutLoad } from "./$types";
 
 injectSpeedInsights();
 
-export const load: LayoutLoad = async ({ fetch, data, depends, url }) => {
+export const load: LayoutLoad = async ({ fetch, depends }) => {
 	depends("supabase:auth");
-
+	
 	const supabase = isBrowser()
 		? createBrowserClient(
 				PUBLIC_SUPABASE_URL,
@@ -26,28 +27,38 @@ export const load: LayoutLoad = async ({ fetch, data, depends, url }) => {
 					},
 				},
 			)
-		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_PUBLISHABLE_KEY, {
-				global: {
-					fetch,
-				},
-				cookies: {
-					getAll() {
-						return data.cookies;
-					},
-				},
-			});
+		: null;
 
 	/**
 	 * It's fine to use `getSession` here, because on the client, `getSession` is
 	 * safe, and on the server, it reads `session` from the `LayoutData`, which
 	 * safely checked the session using `safeGetSession`.
 	 */
-	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+	const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+	let userData = null;
 
-	let theme = url.searchParams.get(URL_PARAMS.THEME) ?? "claro";
-	if (!["claro", "escuro"].includes(theme.toLowerCase())) theme = "claro";
+	if (session) {
+		userData = get(user);
+		if (!userData) {
+			const cookie = getCookie("user_data");
+			if (cookie) {
+				removeCookie("user_data");
 
-	return { supabase, session, userData: data.userData, theme };
+				try {
+					userData = JSON.parse(cookie);
+					user.set(userData);
+				} catch {}
+			} else {
+				const data = localStorage.getItem("user_data");
+				if (data) {
+					try {
+						userData = JSON.parse(data);
+						user.set(userData);
+					} catch {}
+				}
+			}
+		}
+	}
+
+	return { supabase, session, userData };
 };

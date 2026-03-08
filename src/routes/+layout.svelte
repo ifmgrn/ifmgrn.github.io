@@ -10,13 +10,17 @@ import { invalidate } from "$app/navigation";
 import { page } from "$app/state";
 import "./layout.css";
 import "../styles/main.scss";
+import { user } from "$lib/stores/user";
+import { enhance } from "$app/forms";
 
 let { data, children } = $props();
 let { supabase, session } = $derived(data);
 const { userData } = $derived(page.data);
 onMount(() => {
-	const { data } = supabase.auth.onAuthStateChange((event, _session) => {
+	if (!supabase) return;
+	const { data } = supabase.auth.onAuthStateChange((_event, _session) => {
 		if (_session?.expires_at !== session?.expires_at) {
+			user.set(null);
 			invalidate("supabase:auth");
 		}
 	});
@@ -37,7 +41,11 @@ onMount(() => {
 			{#if userData}
 				<span>{userData.name}</span>
 				<img src="https://suap.ifmg.edu.br{userData.photo_relurl}" alt="">
-				<a href="/api/auth/suap/logout">Logout</a>
+				<form method="POST" action="/api/auth/suap/logout" 
+					use:enhance={async () => {await supabase?.auth.signOut()}}
+				>
+  					<button>Logout</button>
+				</form>
 			{:else}
 				<a href="/api/auth/suap/login">Login</a>
 			{/if}
