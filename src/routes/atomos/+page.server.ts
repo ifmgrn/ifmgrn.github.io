@@ -1,5 +1,5 @@
-export async function load({ parent }) {
-	const { supabase } = await parent();
+export async function load({ locals }) {
+	const { supabase } = locals;
 
 	const { data: atoms, error } = await supabase
 		.from("atoms")

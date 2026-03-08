@@ -1,8 +1,8 @@
 import { URL_PARAMS } from "$lib/consts.js";
 //import { reactions } from "$lib/db/reactions";
 
-export async function load({ url, parent }) {
-	const { supabase } = await parent();
+export async function load({ url, locals }) {
+	const { supabase } = locals;
 
 	const query = url.searchParams.get(URL_PARAMS.SEARCH_REACTION) ?? "";
 	const reactants = url.searchParams.get(URL_PARAMS.SEARCH_REACTANT) ?? "";
