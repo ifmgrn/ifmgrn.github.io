@@ -57,7 +57,7 @@ Veja a aba ["Projetos"](https://github.com/users/ifmgrn/projects/1) do GitHub pa
 
 ## Contribuidores
 
-[John](https://github.com/ifmgrn), [Davi Almeida](), [Nicolas Samuel](), [Luiz Fernando](https://github.com/soqueroentrar).
+[John](https://github.com/ifmgrn), [Davi Almeida](https://github.com/davialmeida02), [Nicolas Samuel](https://github.com/0focomaisansiedade), [Luiz Fernando](https://github.com/soqueroentrar), Atos e Daniel.
 
 ## Licença
 
