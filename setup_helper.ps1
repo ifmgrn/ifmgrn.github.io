@@ -36,6 +36,14 @@ function Get-LatestGitURL() {
     $installer.browser_download_url
 }
 
+function Get-LatestNodeLTSVersion() {
+    $releases = Invoke-RestMethod -Uri 'https://nodejs.org/dist/index.json'
+
+    $latestLts = $releases | Where-Object { $_.lts } | Sort-Object { [Version]$_.version.TrimStart('v') } -Descending | Select-Object -First 1
+
+    [Version]$latestLts.version.TrimStart('v')
+}
+
 function Get-Archive($url, $destination, $fileName) {
     if (-not $fileName) {
         $fileName = Split-Path $url -Leaf
@@ -119,17 +127,45 @@ $env:Path = [Environment]::ExpandEnvironmentVariables(
     }
 }
 
-function Install-Bun() {
-    $currentVersion = Get-Version 'bun -v' $true
+function Install-Node() {
+    $currentVersion = Get-Version 'node -v' $true
+    $expectedVersion = Get-LatestNodeLTSVersion
 
-    if ($null -eq $currentVersion) {
-        Write-Host "Instalando bun..."
-        Invoke-RestMethod bun.sh/install.ps1 | Invoke-Expression 1>$null
-        Update-Path
+    function Update-Pnpm() {
+        Write-Host 'Atualizando npm...'
+        npm update -g npm > $null
+
+        Write-Host "Instalando/Atualizando pnpm..."
+        npm install -g pnpm > $null
+
+        Write-Host 'Conferindo requerimentos do projeto...'
+        pnpm --dir "$repoFolder" install -s > $null
     }
+    
+    if ($currentVersion -lt $expectedVersion) {
+        Write-Host "Nenhum Node.js igual ou maior que v$expectedVersion foi encontrado no PATH. Baixando Node.js localmente..."
+    
+        $name = "node-v$expectedVersion-win-x64"
+        $url = "https://nodejs.org/dist/v$expectedVersion/$name.zip"
+        $newName = 'nodejs'
+        $dest = Join-Path $currentDir $newName
+        
+        if (Test-Path $dest) {
+            Write-Host 'Removendo Node.js localmente...'
+            Remove-Item -Path $dest -Recurse -Force
+        }
 
-    Write-Host 'Conferindo requerimentos do projeto...'
-    bun install --cwd "$repoFolder" --silent
+        Get-Archive $url $currentDir
+        if ($?) {
+            Rename-Item -Path (Join-Path $currentDir $name) -NewName $newName
+            Add-ToUserPath $dest
+            Add-ToUserPath (Join-Path $env:APPDATA 'npm')
+
+            Update-Pnpm
+        }
+    } else {
+        Update-Pnpm
+    }
 }
 
 function Install-Git() {
@@ -193,11 +229,11 @@ function Get-Project() {
 }
 
 function Start-ProjectServer() {
-    if ((Test-Path $repoFolder) -and (Test-ExecutableInPATH 'bun')) {
+    if ((Test-Path $repoFolder) -and (Test-ExecutableInPATH 'pnpm')) {
         Write-Host 'Iniciando servidor local de desenvolvimento do projeto...'
-        Write-Host "Para acessar o website do projeto, abra a URL: http://localhost:5173/" -ForegroundColor Yellow
+        Write-Host "Para acessar o website do projeto, abra a URL: http://localhost:5173/$repoName/" -ForegroundColor Yellow
         Write-Host 'Para parar o servidor, pressione Ctrl+C.'
-        bun run --cwd "$repoFolder" --silent dev --clearScreen false -l warn
+        pnpm --dir "$repoFolder" -s run dev --clearScreen false -l warn
     }
 }
 
@@ -205,6 +241,6 @@ function Start-ProjectServer() {
 Update-PATH
 Install-Git
 Get-Project
-Install-Bun
+Install-Node
 Install-VSCode
 Start-ProjectServer
