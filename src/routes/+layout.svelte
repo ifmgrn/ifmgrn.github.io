@@ -5,6 +5,7 @@
 	import "./layout.css";
 	import { user } from "$lib/stores/user";
 	import { enhance } from "$app/forms";
+	import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
 
 	let { data, children } = $props();
 	let { supabase, session } = $derived(data);
@@ -32,7 +33,9 @@
 
 <header>
 	<nav>
-		<div class="nav-left"></div>
+		<div class="nav-left">
+		    <ThemeSwitch />
+		</div>
 
 		<div class="nav-center">
 			<a href="/reacoes">Reações</a>
