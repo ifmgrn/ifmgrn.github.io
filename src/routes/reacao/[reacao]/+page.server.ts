@@ -14,4 +14,4 @@ export async function load({ params, locals }) {
 	if (!reaction) error(STATUS_CODE.BAD_REQUEST, "A reação não existe.");
 
 	return { reaction };
-};
+}

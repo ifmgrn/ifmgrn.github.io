@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.11/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -10,7 +10,7 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!!**/bun.lock",
+			"!!**/pnpm-lock.yaml",
 			"!!**/dist",
 			"!**/.svelte-kit",
 			"!**/*.svelte"
@@ -29,11 +29,13 @@
 				"noNoninteractiveElementInteractions": "on"
 			},
 			"complexity": {
-				"noExcessiveCognitiveComplexity": "on",
 				"noForEach": "info",
 				"noImplicitCoercions": "on",
 				"noUselessStringConcat": "on",
-				"useSimplifiedLogicExpression": "on"
+				"useSimplifiedLogicExpression": "on",
+				"noUselessCatchBinding": "on",
+				"noUselessUndefined": "on",
+				"useMaxParams": "on"
 			},
 			"correctness": {
 				"noUndeclaredDependencies": "on",
@@ -42,20 +44,13 @@
 				"useImportExtensions": "on"
 			},
 			"nursery": {
-				"noDeprecatedImports": "on",
 				"noForIn": "error",
-				"noImportCycles": "on",
 				"noParametersOnlyUsedInRecursion": "on",
 				"noShadow": "on",
 				"noSyncScripts": "on",
 				"noUnnecessaryConditions": "on",
-				"noUnusedExpressions": "on",
-				"noUselessCatchBinding": "on",
-				"noUselessUndefined": "on",
 				"useArraySortCompare": "warn",
-				"useConsistentArrowReturn": "info",
 				"useFind": "warn",
-				"useMaxParams": "on",
 				"useSortedClasses": "on"
 			},
 			"performance": {
@@ -105,9 +100,15 @@
 						"conventions": [
 							{
 								"selector": {
-									"kind": "typeLike"
+									"kind": "typeMember"
 								},
 								"formats": ["camelCase", "snake_case"]
+							},
+							{
+								"selector": {
+									"kind": "objectLiteralMember"
+								},
+								"formats": ["camelCase", "snake_case", "PascalCase"]
 							}
 						]
 					}
@@ -117,7 +118,8 @@
 				"useObjectSpread": "on",
 				"useShorthandAssign": "on",
 				"useThrowOnlyError": "on",
-				"useUnifiedTypeSignatures": "on"
+				"useUnifiedTypeSignatures": "on",
+				"useConsistentArrowReturn": "info"
 			},
 			"suspicious": {
 				"noConstantBinaryExpressions": "on",
@@ -127,7 +129,10 @@
 				"useAwait": "info",
 				"useErrorMessage": "info",
 				"useNumberToFixedDigitsArgument": "info",
-				"useStaticResponseMethods": "on"
+				"useStaticResponseMethods": "on",
+				"noDeprecatedImports": "on",
+				"noImportCycles": "on",
+				"noUnusedExpressions": "on"
 			}
 		},
 		"domains": {
@@ -137,6 +142,14 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
+		}
+	},
+	"html": {
+		"experimentalFullSupportEnabled": true
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
 		}
 	},
 	"assist": {

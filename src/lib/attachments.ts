@@ -10,7 +10,7 @@ export function enhanceGet(): Attachment<HTMLFormElement> {
 			return;
 		}
 
-		const onSubmit = async (event: SubmitEvent) => {
+		const onSubmit = (event: SubmitEvent) => {
 			event.preventDefault();
 
 			const url = new URL(form.action || window.location.href);

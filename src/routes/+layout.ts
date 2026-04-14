@@ -1,22 +1,19 @@
-import {
-	createBrowserClient,
-	isBrowser,
-} from "@supabase/ssr";
+import { createBrowserClient, isBrowser } from "@supabase/ssr";
 import { injectSpeedInsights } from "@vercel/speed-insights/sveltekit";
+import { get } from "svelte/store";
+import { getCookie, removeCookie } from "tiny-cookie";
 import {
 	PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 	PUBLIC_SUPABASE_URL,
 } from "$env/static/public";
-import { get } from "svelte/store";
 import { user } from "$lib/stores/user";
-import { getCookie, removeCookie } from "tiny-cookie";
 import type { LayoutLoad } from "./$types";
 
 injectSpeedInsights();
 
 export const load: LayoutLoad = async ({ fetch, depends }) => {
 	depends("supabase:auth");
-	
+
 	const supabase = isBrowser()
 		? createBrowserClient(
 				PUBLIC_SUPABASE_URL,
@@ -34,7 +31,9 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 	 * safe, and on the server, it reads `session` from the `LayoutData`, which
 	 * safely checked the session using `safeGetSession`.
 	 */
-	const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+	const session = supabase
+		? (await supabase.auth.getSession()).data.session
+		: null;
 	let userData = null;
 
 	if (session) {
@@ -47,14 +46,18 @@ export const load: LayoutLoad = async ({ fetch, depends }) => {
 				try {
 					userData = JSON.parse(cookie);
 					user.set(userData);
-				} catch {}
+				} catch {
+					// continue regardless of error
+				}
 			} else {
 				const data = localStorage.getItem("user_data");
 				if (data) {
 					try {
 						userData = JSON.parse(data);
 						user.set(userData);
-					} catch {}
+					} catch {
+						// continue regardless of error
+					}
 				}
 			}
 		}
