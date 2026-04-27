@@ -37,7 +37,10 @@
 
 <header>
 	<nav class="grid grid-cols-3 items-center h-14 border-b border-surface-200-800">
-		<div class="justify-self-start flex items-center">
+		<div class="justify-self-start flex items-center gap-2">
+			<a href="/">
+				<img src="/images/favicon-ifmg-edu-br-32x32.webp" class="h-8" alt="Logo">
+			</a>
 		    <ThemeSwitch />
 		</div>
 
