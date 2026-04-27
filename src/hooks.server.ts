@@ -62,9 +62,22 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return error === null && user !== null;
 	};
 
-	return resolve(event, {
+	const response = await resolve(event, {
 		filterSerializedResponseHeaders(name) {
 			return name === "content-range" || name === "x-supabase-api-version";
 		},
 	});
+
+	const isStaticAsset =
+		event.url.pathname.startsWith("/_app/immutable/") ||
+		event.url.pathname.startsWith("/assets/");
+
+	if (isStaticAsset) {
+		response.headers.set(
+			"Cache-Control",
+			"public, max-age=31536000, immutable",
+		);
+	}
+
+	return response;
 };
