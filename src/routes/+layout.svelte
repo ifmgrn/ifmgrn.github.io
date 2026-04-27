@@ -13,6 +13,8 @@
 	let { supabase, session } = $derived(data);
 	const { userData } = $derived(page.data);
 
+	const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
+
 	onMount(() => {
 		if (!supabase) return;
 
@@ -64,7 +66,7 @@
 						<Menu.Positioner>
 							<Menu.Content>
 								<Menu.Item value="info" disabled>
-									<Menu.ItemText>{userData.relationship_type}: {userData.name} ({userData.ra})</Menu.ItemText>
+									<Menu.ItemText>{capitalize(userData.role)}: {userData.name} ({userData.ra})</Menu.ItemText>
 								</Menu.Item>
 								<Menu.Item value="logout">
 									<form method="POST" action="/api/auth/suap/logout" 

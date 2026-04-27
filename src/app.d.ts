@@ -32,7 +32,7 @@ declare global {
 		auth_id: string;
 		name: string;
 		ra: string;
-		relationship_type: string;
+		role: string;
 		photo_relurl: string;
 	}
 
