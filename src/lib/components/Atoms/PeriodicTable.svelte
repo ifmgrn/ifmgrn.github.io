@@ -31,7 +31,8 @@
 	actinides.sort((a, b) => a.atomic_number - b.atomic_number);
 </script>
 
-<table>
+<div class="overflow-x-auto">
+<table class="min-w-full">
 	<colgroup>
 		<col span="1" style="width: 2ch;">
 		<col span="18">
@@ -151,6 +152,7 @@
 	</tr>
 	</tbody>
 </table>
+</div>
 
 <style>
 	table {

@@ -11,9 +11,9 @@ const carta = new Carta({
 });
 </script>
 
-<h1>{reaction.name}</h1>
+<h1 class="h1 text-center">{reaction.name}</h1>
 <section>
-	<ul class="center tree">
+	<ul class="mx-auto w-fit list-inside list-disc space-y-2">
 		<li>Classificaç{reaction.classifications.length === 1 ? "ão" : "ões"}: {reaction.classifications.join(", ")}</li>
 		<li>Reagente(s): {reaction.reactants.join(", ")}</li>
 		<li>Produto(s): {reaction.products.join(", ")}</li>
@@ -21,16 +21,21 @@ const carta = new Carta({
 	</ul>
 </section>
 
+<hr class="hr">
+
 <section>
-	<h2>Demonstração</h2>
-	<iframe frameborder="0" title={reaction.name}
+	<h2 class="h2 text-center">Demonstração</h2>
+	<iframe class="w-full aspect-video" frameborder="0" title={reaction.name}
 	referrerpolicy="strict-origin-when-cross-origin"
 	allow="encrypted-media; picture-in-picture" allowfullscreen
 	src="https://www.youtube-nocookie.com/embed/{reaction.youtube_video_id}"></iframe>
 </section>
 
+<hr class="hr">
+
 <section>
-<h2>Instruções</h2>
-<!--<SvelteMarkdown source={reaction.description} />-->
-<Markdown {carta} value={reaction.description} />
+<h2 class="h2 text-center">Instruções</h2>
+<div class="prose dark:prose-invert max-w-none">
+	<Markdown {carta} value={reaction.description} />
+</div>
 </section>

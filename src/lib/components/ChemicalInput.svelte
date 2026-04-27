@@ -70,14 +70,14 @@
 
 			const inputFocusIn = () => {
 				toolbar.removeAttribute("aria-hidden");
-				toolbar.classList.remove("hidden");
+				toolbar.classList.remove("animate-hidden");
 			}
 			input.addEventListener("focusin", inputFocusIn);
 			const inputFocusOut = (event: FocusEvent) => {
 				const target = event.relatedTarget;
 				if (!(target instanceof Node && toolbar.contains(target))) {
 					toolbar.setAttribute("aria-hidden", "true");
-					toolbar.classList.add("hidden");
+					toolbar.classList.add("animate-hidden");
 				}
 			};
 			input.addEventListener("focusout", inputFocusOut);
@@ -93,15 +93,23 @@
 </script>
 
 <div {@attach inputContainer()} class="input-container">
-	<div role="group" class="hidden" aria-hidden="true">
+	<div role="group" class="animate-hidden" aria-hidden="true">
 		{#each "₀₁₂₃₄₅₆₇₈₉" as num}
-			<button type="button" tabindex="0" data-to-insert={num}>X{num}</button>
+			<button class="btn preset-filled-surface-50-950" type="button" tabindex="0" data-to-insert={num}>X{num}</button>
 		{/each}
 	</div>
-	<input {...inputProps}>
+	<input class="input" {...inputProps}>
 </div>
 
 <style>
+	.animate-hidden {
+		opacity: 0 !important;
+		visibility: hidden !important;
+		transition:
+			opacity .2s ease-in-out,
+			visibility 0s linear .2s !important;
+	}
+
 	.input-container {
 		position: relative;
 	}
@@ -112,15 +120,26 @@
 		left: 50%;
 		z-index: 10;
 		transform: translateX(-50%);
-		transition: opacity var(--transition);
+		transition: opacity .2s ease-in-out;
 	}
 
 	button {
-		--background-color: var(--form-element-background-color);
-		--color: var(--muted-color);
-		--border-color: var(--primary-border);
+		padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
+		border-radius: var(--radius-base);
+		cursor: pointer;
+	}
 
-		cursor: unset;
-		margin-bottom: 0;
+	[role=group] {
+		display: inline-flex;
+		width: auto;
+		flex-wrap: nowrap;
+		justify-content: center;
+		vertical-align: middle;
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+		padding: 0.25rem;
+		gap: 0.25rem;
+		border: 1px solid var(--color-surface-200-800);
+		border-radius: var(--radius-container);
 	}
 </style>

@@ -45,8 +45,4 @@
 	.value {
 		text-align: left;
 	}
-
-	a {
-		color: #d9d9d9;
-	}
 </style>
