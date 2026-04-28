@@ -35,6 +35,15 @@
 	See LICENSE.txt for details.
 -->
 
+<svelte:head>
+	<script>
+		document.documentElement.setAttribute('data-mode', 
+			localStorage.getItem('theme-mode') 
+			|| (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+		);
+	</script>
+</svelte:head>
+
 <header>
 	<nav class="grid grid-cols-3 items-center h-14 border-b border-surface-200-800">
 		<div class="justify-self-start flex items-center gap-2">

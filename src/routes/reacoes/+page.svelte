@@ -10,6 +10,8 @@
 <svelte:head>
   <link rel="preconnect" href="https://i.ytimg.com" />
   <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+  <title>Banco de Dados de Reações Químicas</title>
+  <meta name="description" content="Um banco de dados de reações químicas onde você pode pesquisar, visualizar vídeos e ver detalhes sobre reações químicas.">
 </svelte:head>
 
 <form method="GET" {@attach enhanceGet()} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">

@@ -11,6 +11,11 @@ const carta = new Carta({
 });
 </script>
 
+<svelte:head>
+  <title>{reaction.name} - Reação Química</title>
+  <meta name="description" content="Vídeos e informações diversas sobre a reação química: {reaction.name}.">
+</svelte:head>
+
 <h1 class="h1 text-center">{reaction.name}</h1>
 <section>
 	<ul class="mx-auto w-fit list-inside list-disc space-y-2">
