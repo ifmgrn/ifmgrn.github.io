@@ -1,13 +1,22 @@
-# EXAMPLE USAGE:
-#
-#   Refer for explanation to following link:
-#   https://lefthook.dev/configuration/
-#
+assert_lefthook_installed: true
+# For glob list support
+min_version: 1.10.10
+
+templates:
+  exec: pnpm -s exec
+  run: pnpm -s run
+
 pre-commit:
-  commands:
-    ts:
-      glob: "*.ts"
-      run: pnpm -s run check
-    check:
-      run: pnpm -s run lint {staged_files}
+  piped: true
+  jobs:
+    - name: formatting and linting
+      run: "{run} format --colors=off {staged_files}"
       stage_fixed: true
+
+    - name: type checking
+      # Type checking always needs to happen on the entire project
+      run: "{run} check"
+      glob:
+        - "*.{ts,js,svelte}"
+        - "pnpm-lock.yaml"
+        - "tsconfig.json"
