@@ -144,7 +144,7 @@ export async function exchangeCodeForSession(next?: string) {
 		},
 	});
 
-	const userMetaData: UserMetadata = {
+	const userMetadata: UserMetadata = {
 		suap_id: suapUser.id,
 		ra: suapUser.matricula,
 		name: suapUser.vinculo.nome,
@@ -168,7 +168,7 @@ export async function exchangeCodeForSession(next?: string) {
 			await supabaseAdmin.auth.admin.updateUserById(user.auth_id, {
 				email: suapUser.email,
 				email_confirm: true,
-				user_metadata: userMetaData,
+				user_metadata: userMetadata,
 			})
 		).data.user?.id;
 	} else {
@@ -176,7 +176,7 @@ export async function exchangeCodeForSession(next?: string) {
 			await supabaseAdmin.auth.admin.createUser({
 				email: suapUser.email,
 				email_confirm: true,
-				user_metadata: userMetaData,
+				user_metadata: userMetadata,
 			})
 		).data.user?.id;
 	}
@@ -187,7 +187,7 @@ export async function exchangeCodeForSession(next?: string) {
 
 	await supabaseAdmin
 		.from("suap_users")
-		.upsert({ suap_id: suapUser.id, auth_id: authId });
+		.upsert({ ...userMetadata, auth_id: authId });
 
 	const { data: magicLink } = await supabaseAdmin.auth.admin.generateLink({
 		type: "magiclink",
