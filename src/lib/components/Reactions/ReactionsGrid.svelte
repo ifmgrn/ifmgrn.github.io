@@ -4,18 +4,8 @@
 	const { reactions }: { reactions: Reaction[] } = $props();
 </script>
 
-<div role="list" class="reactions-grid">
+<div role="list" class="grid p-4 justify-center gap-4 grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
 	{#each reactions as reaction}
 		<ReactionItem {reaction} />
 	{/each}
 </div>
-
-<style>
-	.reactions-grid {
-		display: grid;
-		padding: 16px;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		justify-content: center;
-		gap: 16px;
-	}
-</style>

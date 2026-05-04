@@ -1,145 +1,109 @@
 <script lang="ts">
-	import type { Attachment } from "svelte/attachments";
-	import type { HTMLInputAttributes } from 'svelte/elements';
+	import type { HTMLInputAttributes } from "svelte/elements";
 
 	const { inputProps }: { inputProps?: HTMLInputAttributes } = $props();
+	let toolbarEl: HTMLDivElement;
+	// biome-ignore lint/suspicious/noUnassignedVariables: bind:this
+	let inputEl: HTMLInputElement;
 
-	function isDigit(str: string) {
-		return str.length === 1 && str >= "0" && str <= "9";
-	}
+	const hiddenClasses = ["invisible", "opacity-0", "transition-fade"];
 
-	function insertTextAtCursor(input: HTMLInputElement, text: string) {
-		const start = input.selectionStart ?? 0;
-		const end = input.selectionEnd ?? 0;
-		const value = input.value;
+	function insertTextAtCursor(text: string) {
+		const start = inputEl.selectionStart ?? 0;
+		const end = inputEl.selectionEnd ?? 0;
+		const value = inputEl.value;
 
-		input.value = value.substring(0, start) + text + value.substring(end);
+		inputEl.value = value.slice(0, start) + text + value.slice(end);
 
 		const newCursorPos = start + text.length;
-		input.selectionStart = input.selectionEnd = newCursorPos;
+		inputEl.selectionStart = inputEl.selectionEnd = newCursorPos;
 
-		input.focus();
-		input.dispatchEvent(new Event("input", { bubbles: true }));
-	}
-
-	function inputContainer(): Attachment<HTMLDivElement> {
-		return (container) => {
-			const toolbar: HTMLDivElement | null = container.querySelector('[role="group"]');
-			const input = container.querySelector("input");
-			if (!(toolbar && input)) return;
-
-			const inputKeydown = (event: KeyboardEvent) => {
-				// Tira o foco do input se o usuário pressionar Esc
-				if (event.key === "Escape") {
-					// Impede com que os navegadores limpem o texto do input
-					event.preventDefault();
-					input.blur();
-				}
-				// Se o usuário pressionar Ctrl mais algum dígito, adiciona a versão subscrita do dígito
-				else if (event.ctrlKey && isDigit(event.key)) {
-					const numberToSubscriptMap: { [key: string]: string } = {
-						"0": "₀",
-						"1": "₁",
-						"2": "₂",
-						"3": "₃",
-						"4": "₄",
-						"5": "₅",
-						"6": "₆",
-						"7": "₇",
-						"8": "₈",
-						"9": "₉",
-					};
-
-					insertTextAtCursor(input, numberToSubscriptMap[event.key]);
-					// Impede com que o dígito original seja adicionado
-					event.preventDefault();
-				}
-			};
-			input.addEventListener("keydown", inputKeydown);
-
-			const toolbarClick = (event: PointerEvent) => {
-				const button = event.target as HTMLDivElement | HTMLButtonElement;
-				if (button instanceof HTMLButtonElement) {
-					insertTextAtCursor(
-						input,
-						button.dataset.toInsert ?? button.textContent ?? "",
-					);
-				}
-			};
-			toolbar.addEventListener("click", toolbarClick);
-
-			const inputFocusIn = () => {
-				toolbar.removeAttribute("aria-hidden");
-				toolbar.classList.remove("animate-hidden");
-			}
-			input.addEventListener("focusin", inputFocusIn);
-			const inputFocusOut = (event: FocusEvent) => {
-				const target = event.relatedTarget;
-				if (!(target instanceof Node && toolbar.contains(target))) {
-					toolbar.setAttribute("aria-hidden", "true");
-					toolbar.classList.add("animate-hidden");
-				}
-			};
-			input.addEventListener("focusout", inputFocusOut);
-
-			return () => {
-				input.removeEventListener("keydown", inputKeydown);
-				toolbar.removeEventListener("click", toolbarClick);
-				input.removeEventListener("focusin", inputFocusIn);
-				input.removeEventListener("focusout", inputFocusOut);
-			};
-		}
+		inputEl.focus();
+		inputEl.dispatchEvent(new Event("input", { bubbles: true }));
 	}
 </script>
 
-<div {@attach inputContainer()} class="input-container">
-	<div role="group" class="animate-hidden" aria-hidden="true">
+<div class="relative">
+	<div
+		role="group"
+		class={["absolute bottom-full left-1/2 z-10 inline-flex flex-nowrap justify-center gap-1 w-auto p-1 overflow-x-auto overscroll-x-contain align-middle border border-(--color-surface-200-800) rounded-(--radius-container) -translate-x-1/2 transition-opacity duration-200 ease-in-out", ...hiddenClasses]}
+		aria-hidden="true"
+		bind:this={toolbarEl}
+		onclick={(event) => {
+			const button = event.target as HTMLDivElement | HTMLButtonElement | null;
+			if (button instanceof HTMLButtonElement) {
+				insertTextAtCursor(
+					button.dataset.value ?? button.textContent ?? "",
+				);
+			}
+		}}
+	>
 		{#each "₀₁₂₃₄₅₆₇₈₉" as num}
-			<button class="btn preset-filled-surface-50-950" type="button" tabindex="0" data-to-insert={num}>X{num}</button>
+			<button
+				class="btn preset-filled-surface-50-950 px-2"
+				type="button"
+				tabindex="0"
+				data-value={num}
+			>
+				X{num}
+			</button>
 		{/each}
 	</div>
-	<input class="input" {...inputProps}>
+	<input
+		class="input"
+		{...inputProps}
+		bind:this={inputEl}
+		onkeydown={(event) => {
+			const input = event.currentTarget;
+
+			// Tira o foco do input se o usuário pressionar Esc
+			if (event.key === "Escape") {
+				// Impede com que os navegadores limpem o texto do input
+				event.preventDefault();
+
+				input.blur();
+			}
+			// Se o usuário pressionar Ctrl mais algum dígito, adiciona a versão subscrita do dígito
+			else if (event.ctrlKey && (event.key.length === 1 && event.key >= "0" && event.key <= "9")) {
+				const numberToSubscriptMap: { [key: string]: string } = {
+					"0": "₀",
+					"1": "₁",
+					"2": "₂",
+					"3": "₃",
+					"4": "₄",
+					"5": "₅",
+					"6": "₆",
+					"7": "₇",
+					"8": "₈",
+					"9": "₉",
+				};
+
+				insertTextAtCursor(numberToSubscriptMap[event.key]);
+
+				// Impede com que o dígito original seja adicionado
+				event.preventDefault();
+			}
+		}}
+		onfocusin={() => {
+			toolbarEl.removeAttribute("aria-hidden");
+			toolbarEl.classList.remove(...hiddenClasses);
+		}}
+		onfocusout={(event) => {
+			const target = event.relatedTarget;
+
+			if (!(target instanceof Node && toolbarEl.contains(target))) {
+				toolbarEl.setAttribute("aria-hidden", "true");
+				toolbarEl.classList.add(...hiddenClasses);
+			}
+		}}
+	>
 </div>
 
 <style>
-	.animate-hidden {
-		opacity: 0 !important;
-		visibility: hidden !important;
-		transition:
-			opacity .2s ease-in-out,
-			visibility 0s linear .2s !important;
-	}
-
-	.input-container {
-		position: relative;
-	}
-
-	.input-container > [role="group"] {
-		position: absolute;
-		bottom: 100%;
-		left: 50%;
-		z-index: 10;
-		transform: translateX(-50%);
-		transition: opacity .2s ease-in-out;
-	}
-
-	button {
-		padding: calc(var(--spacing) * 1) calc(var(--spacing) * 2);
-		border-radius: var(--radius-base);
-		cursor: pointer;
-	}
-
-	[role=group] {
-		display: inline-flex;
-		width: auto;
-		flex-wrap: nowrap;
-		justify-content: center;
-		vertical-align: middle;
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
-		padding: 0.25rem;
-		gap: 0.25rem;
-		border: 1px solid var(--color-surface-200-800);
-		border-radius: var(--radius-container);
+	.transition-fade {
+		transition-delay: 0s, var(--tw-duration);
+		transition-timing-function: var(--tw-ease), linear;
+		transition-duration: var(--tw-duration), 0s;
+		transition-property: opacity, visibility;
 	}
 </style>

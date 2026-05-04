@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { enhanceGet } from "$lib/attachments.js";
+	import ChemicalInput from "$lib/components/ChemicalInput.svelte";
 	import ReactionsGrid from "$lib/components/Reactions/ReactionsGrid.svelte";
 	import { URL_PARAMS } from "$lib/consts.js";
-	import ChemicalInput from "$lib/components/ChemicalInput.svelte";
 
 	let { data } = $props();
 </script>
@@ -14,7 +13,7 @@
   <meta name="description" content="Um banco de dados de reações químicas onde você pode pesquisar, visualizar vídeos e ver detalhes sobre reações químicas.">
 </svelte:head>
 
-<form method="GET" {@attach enhanceGet()} class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+<form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
 	<label class="label">
 		<span class="label-text">Nome</span>
 		<input

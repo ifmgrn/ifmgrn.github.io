@@ -22,8 +22,8 @@
 		<Switch.Control>
 			<Switch.Thumb>
 				<Switch.Context>
-					{#snippet children(switch_)}
-						{#if switch_().checked}
+					{#snippet children(_switch)}
+						{#if _switch().checked}
 							<SunIcon class="size-3" />
 						{:else}
 							<MoonIcon class="size-3" />

@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit";
+import { STATUS_CODE } from "$lib/consts";
 
 export function load() {
-	throw redirect(307, "/reacoes");
+	redirect(STATUS_CODE.PERMANENT_REDIRECT, "/reacoes");
 }

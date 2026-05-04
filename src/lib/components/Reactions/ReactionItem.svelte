@@ -3,8 +3,6 @@
 
 	const { reaction }: { reaction: Reaction } = $props();
 
-	const title = reaction.name;
-
 	const fields = [
 		["Reação:", reaction.name],
 		["Classificações:", reaction.classifications.join(", ")],
@@ -14,35 +12,12 @@
 	];
 </script>
 
-<div role="listitem" aria-label={reaction.name} class="reaction-item">
-	<YouTube videoId={reaction.youtube_video_id} videoTitle={title} />
-	<a href="/reacao/{reaction.id}" class="info">
+<div role="listitem" aria-label={reaction.name} class="flex flex-col">
+	<YouTube videoId={reaction.youtube_video_id} videoTitle={reaction.name} />
+	<a href="/reacao/{reaction.id}#demonstracao" class="grid mt-1 grid-cols-[auto_1fr] gap-x-2 mx-auto">
 		{#each fields as field}
-			<span class="field">{field[0]}</span>
-			<span class="value">{field[1]}</span>
+			<span class="font-bold text-right">{field[0]}</span>
+			<span class="text-left">{field[1]}</span>
 		{/each}
 	</a>
 </div>
-
-<style>
-	.reaction-item {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.info {
-		display: grid;
-		margin-top: 4px;
-		grid-template-columns: auto 1fr;
-		gap: 0 8px;
-	}
-
-	.field {
-		font-weight: bold;
-		text-align: right;
-	}
-
-	.value {
-		text-align: left;
-	}
-</style>

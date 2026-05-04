@@ -160,6 +160,12 @@
 				}
 			},
 			"nursery": {
+				"noExcessiveNestedCallbacks": {
+					"level": "warn",
+					"options": {
+						"max": 4
+					}
+				},
 				"noFloatingPromises": "warn",
 				"noForIn": "error",
 				"noInlineStyles": "error",
@@ -189,6 +195,10 @@
 				"useErrorCause": "warn",
 				"useExhaustiveSwitchCases": "warn",
 				"useIframeSandbox": "warn",
+				"useMathMinMax": {
+					"level": "info",
+					"fix": "safe"
+				},
 				"useNamedCaptureGroup": "warn",
 				"useReduceTypeParameter": {
 					"level": "info",
@@ -220,7 +230,6 @@
 			},
 			"style": {
 				"noInferrableTypes": "info",
-				"noMagicNumbers": "warn",
 				"noNegationElse": "info",
 				"noNestedTernary": "warn",
 				"noParameterProperties": "warn",
@@ -262,6 +271,7 @@
 				"useGroupedAccessorPairs": "warn",
 				"useNamingConvention": {
 					"level": "error",
+					"fix": "unsafe",
 					"options": {
 						"conventions": [
 							{
@@ -300,7 +310,12 @@
 								"selector": {
 									"kind": "objectLiteralProperty"
 								},
-								"formats": ["camelCase", "snake_case", "CONSTANT_CASE"]
+								"formats": [
+									"camelCase",
+									"snake_case",
+									"CONSTANT_CASE",
+									"PascalCase"
+								]
 							},
 							{
 								"selector": {

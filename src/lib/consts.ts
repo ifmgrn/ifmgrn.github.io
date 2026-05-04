@@ -1,11 +1,11 @@
-/** biome-ignore-all lint/style/useNamingConvention: This file is dedicated to constants */
-
 export const STATUS_CODE = {
 	NO_CONTENT: 204,
 	FOUND: 302,
-	NOT_FOUND: 404,
+	SEE_OTHER: 303,
+	PERMANENT_REDIRECT: 308,
 	BAD_REQUEST: 400,
 	FORBIDDEN: 403,
+	NOT_FOUND: 404,
 } as const;
 
 export const URL_PARAMS = {

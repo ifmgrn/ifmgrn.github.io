@@ -1,120 +1,48 @@
 <script lang="ts">
-	import type { Attachment } from "svelte/attachments";
-
 	const { videoId, videoTitle }: { videoId: string; videoTitle: string } =
 		$props();
 
 	let isIframeLoaded = $state(false);
-	function playButton(): Attachment<HTMLAnchorElement> {
-		return (element) => {
-			element.setAttribute("tabindex", "0");
-			element.setAttribute("role", "button");
 
-			const onClick: (this: HTMLAnchorElement, event: PointerEvent) => unknown = (
-				event,
-			) => {
-				event.preventDefault();
-
-				isIframeLoaded = true;
-			};
-
-			element.addEventListener("click", onClick);
-
-			return () => {
-				element.removeEventListener("click", onClick);
-			};
-		};
-	}
+	const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?` +
+		new URLSearchParams({
+			rel: '0', // only display recommendations of same channel
+			autoplay: '1',
+			cc_lang_pref: 'pt', // default caption language
+			hl: 'pt', // interface language
+			iv_load_policy: '3' // disable annotations
+		});
 </script>
 
-<style>
-	.youtube {
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		display: inline-block;
-		position: relative;
-
-		cursor: pointer;
-	}
-
-	.youtube:not(.activated)::after {
-		content: attr(data-title);
-		display: block;
-		position: absolute;
-		top: 0;
-		background-image: linear-gradient(180deg, rgb(0 0 0 / 67%) 0%, rgb(0 0 0 / 54%) 14%, rgb(0 0 0 / 15%) 54%, rgb(0 0 0 / 5%) 72%, rgb(0 0 0 / 0%) 94%);
-		height: 99px;
-		width: 100%;
-		font-family: "YouTube Noto",Roboto,Arial,Helvetica,sans-serif;
-		color: hsl(0deg 0% 93.33%);
-		text-shadow: 0 0 2px rgba(0,0,0,.5);
-		font-size: 18px;
-		padding: 25px 20px;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-		box-sizing: border-box;
-	}
-
-	.activated {
-		cursor: unset;
-	}
-
-	iframe {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		left: 0;
-		top: 0;
-	}
-
-	.playIcon {
-		width: 68px;
-		height: 48px;
-		background-color: transparent;
-		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>');
-		z-index: 1;
-		border: 0;
-		border-radius: inherit;
-
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate3d(-50%, -50%, 0);
-		cursor: inherit;
-	}
-
-	.activated .playIcon {
-		display: none;
-	}
-
-	img {
-		object-fit: cover;
-		width: 100%;
-		height: 100%;
-
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-</style>
-
-<div class="youtube" data-title={videoTitle} class:activated={isIframeLoaded}>
-	<a 
-		href="https://youtube.com/watch?v={videoId}"
-		target="_blank"
-		rel="noopener noreferrer"
-		title="Abrir Vídeo"
-		aria-label="Abrir Vídeo: {videoTitle}"
-		{@attach playButton()}
-	>
-		<img referrerpolicy="origin" loading="lazy" alt="Thumbnail do Vídeo: {videoTitle}" src="https://i.ytimg.com/vi/{videoId}/hqdefault.jpg">
-		<span class="playIcon"></span>
-	</a>
+<div class="relative w-full aspect-video overflow-hidden">
 	{#if isIframeLoaded}
-		<iframe frameborder="0" title={videoTitle}
+		<iframe class="absolute w-full h-full" frameborder="0" title={videoTitle}
 		referrerpolicy="strict-origin-when-cross-origin"
-		allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen
-		src="https://www.youtube-nocookie.com/embed/{videoId}?autoplay=1"></iframe>
+		allow="autoplay; encrypted-media; clipboard-write; picture-in-picture" allowfullscreen
+		sandbox="allow-scripts allow-same-origin"
+		src={embedUrl}></iframe>
+	{:else}
+		<a
+			href="https://youtube.com/watch?v={videoId}"
+			target="_blank"
+			rel="noopener noreferrer"
+			title={videoTitle}
+			aria-label="Abrir vídeo: {videoTitle}"
+			tabindex="0"
+			role="button"
+			onclick={(event) => {
+				event.preventDefault();
+				isIframeLoaded = true;
+			}}
+		>
+			<img referrerpolicy="origin" loading="lazy" alt="Thumbnail do vídeo: {videoTitle}" src="https://i.ytimg.com/vi/{videoId}/hqdefault.jpg" class="absolute w-full h-full object-cover">
+			<span class="absolute top-1/2 left-1/2 w-17 h-12 -translate-x-1/2 -translate-y-1/2 bg-youtube-icon"></span>
+		</a>
 	{/if}
 </div>
+
+<style>
+	.bg-youtube-icon {
+		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>');
+	}
+</style>

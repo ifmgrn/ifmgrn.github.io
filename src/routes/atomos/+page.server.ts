@@ -7,6 +7,8 @@ export async function load({ locals }) {
 			"atomic_number, symbol, period, group, chemical_serie, name, atomic_weight, state, short_lived",
 		);
 
-	if (error) throw error;
+	if (error) {
+		throw error;
+	}
 	return { atoms };
 }

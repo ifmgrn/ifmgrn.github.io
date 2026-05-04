@@ -12,14 +12,13 @@ declare global {
 				session: Session | null;
 				user: User | null;
 			}>;
-			isLoggedIn: () => Promise<boolean>;
 			session: Session | null;
 			user: User | null;
 		}
 		interface PageData {
 			supabase: SupabaseClient<Database>;
 			session: Session | null;
-			userData: SuapUser | null;
+			userMetadata: UserMetadata | null;
 		}
 		// interface PageState {}
 		// interface Platform {}
@@ -27,9 +26,8 @@ declare global {
 
 	type Phase = "Gás" | "Líquido" | "Sólido" | "Aquoso" | null;
 
-	interface SuapUser {
+	interface UserMetadata {
 		suap_id: number;
-		auth_id: string;
 		name: string;
 		ra: string;
 		role: string;

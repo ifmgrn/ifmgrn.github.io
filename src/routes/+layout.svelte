@@ -1,31 +1,29 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { invalidate } from "$app/navigation";
-	import { page } from "$app/state";
 	import "./layout.css";
-	import { user } from "$lib/stores/user";
-	import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
+	import { ArrowUpToLine, Atom, FlaskConical, LogIn, LogOut } from "@lucide/svelte";
 	import { Menu, Portal } from '@skeletonlabs/skeleton-svelte';
     import { enhance } from "$app/forms";
-	import { Atom, FlaskConical, LogIn, LogOut } from "@lucide/svelte";
+	import ifmgLogo from '$lib/assets/ifmg-logo.webp';
+	import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
 
 	let { data, children } = $props();
 	let { supabase, session } = $derived(data);
-	const { userData } = $derived(page.data);
+	const { userMetadata } = $derived(data);
 
 	const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);
 
 	onMount(() => {
-		if (!supabase) return;
+		if (!supabase) { return; }
 
-		const { data } = supabase.auth.onAuthStateChange((_event, _session) => {
-			if (_session?.expires_at !== session?.expires_at) {
-				user.set(null);
+		const { data: authData } = supabase.auth.onAuthStateChange((_, authSession) => {
+			if (authSession?.expires_at !== session?.expires_at) {
 				invalidate("supabase:auth");
 			}
 		});
 
-		return () => data.subscription.unsubscribe();
+		return () => authData.subscription.unsubscribe();
 	});
 </script>
 
@@ -48,7 +46,7 @@
 	<nav class="grid grid-cols-3 items-center h-14 border-b border-surface-200-800">
 		<div class="justify-self-start flex items-center gap-2">
 			<a href="/">
-				<img src="/images/favicon-ifmg-edu-br-32x32.webp" class="h-8" alt="Logo">
+				<img src={ifmgLogo} class="h-8" alt="Logo">
 			</a>
 		    <ThemeSwitch />
 		</div>
@@ -65,11 +63,11 @@
 		</div>
 
 		<div class="justify-self-end flex items-center">
-			{#if userData}
+			{#if userMetadata}
 				<Menu>
 					<Menu.Trigger>
 						<img
-							src="https://suap.ifmg.edu.br{userData.photo_relurl}"
+							src="https://suap.ifmg.edu.br{userMetadata.photo_relurl}"
 							alt="Profile"
 							class="h-14 rounded-full border border-surface-200-800"
 						/>
@@ -78,7 +76,7 @@
 						<Menu.Positioner>
 							<Menu.Content>
 								<Menu.Item value="info" disabled>
-									<Menu.ItemText>{capitalize(userData.role)}: {userData.name} ({userData.ra})</Menu.ItemText>
+									<Menu.ItemText>{capitalize(userMetadata.role)}: {userMetadata.name} ({userMetadata.ra})</Menu.ItemText>
 								</Menu.Item>
 								<Menu.Item value="logout">
 									<form method="POST" action="/api/auth/suap/logout" 
@@ -105,4 +103,9 @@
 	</nav>
 </header>
 
-<main class="mt-6">{@render children()}</main>
+<main class="mt-6">
+	{@render children()}
+	<a href="#top" class="fixed bottom-4 right-4 px-4 py-2">
+		<ArrowUpToLine />
+	</a>
+</main>

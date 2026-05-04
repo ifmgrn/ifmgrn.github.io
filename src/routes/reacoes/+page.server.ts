@@ -23,7 +23,9 @@ export async function load({ url, locals }) {
 			classification_q: classifications.trim(),
 		},
 	);
-	if (error || !reactions) throw error;
+	if (error || !reactions) {
+		throw error;
+	}
 
 	return { query, reactants, products, classifications, reactions };
 }

@@ -1,12 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
-import type { Handle } from "@sveltejs/kit";
 import {
 	PUBLIC_SUPABASE_PUBLISHABLE_KEY,
 	PUBLIC_SUPABASE_URL,
 } from "$env/static/public";
 
-// biome-ignore lint/suspicious/useAwait: false positive due to maybePromise in resolve
-export const handle: Handle = async ({ event, resolve }) => {
+export async function handle({ event, resolve }) {
 	event.locals.supabase = createServerClient(
 		PUBLIC_SUPABASE_URL,
 		PUBLIC_SUPABASE_PUBLISHABLE_KEY,
@@ -15,15 +13,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 				getAll() {
 					return event.cookies.getAll();
 				},
-				setAll(cookiesToSet) {
+				setAll(cookiesToSet, headers) {
 					/**
 					 * Note: You have to add the `path` variable to the
 					 * set and remove method due to sveltekit's cookie API
 					 * requiring this to be set, setting the path to an empty string
 					 * will replicate previous/standard behavior (https://kit.svelte.dev/docs/types#public-types-cookies)
 					 */
-					for (const { name, value, options } of cookiesToSet)
+					for (const { name, value, options } of cookiesToSet) {
 						event.cookies.set(name, value, { ...options, path: "/" });
+					}
+					if (Object.keys(headers).length > 0) {
+						event.setHeaders(headers);
+					}
 				},
 			},
 		},
@@ -54,17 +56,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return { session, user };
 	};
 
-	event.locals.isLoggedIn = async () => {
-		const {
-			data: { user },
-			error,
-		} = await event.locals.supabase.auth.getUser();
-		return error === null && user !== null;
-	};
-
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {
 			return name === "content-range" || name === "x-supabase-api-version";
 		},
 	});
-};
+}

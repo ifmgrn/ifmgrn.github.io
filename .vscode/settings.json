@@ -6,9 +6,10 @@
 	},
 	"editor.wordWrap": "on",
 	"editor.defaultFormatter": "biomejs.biome",
-	"javascript.preferences.importModuleSpecifier": "relative",
-	"typescript.preferences.importModuleSpecifier": "relative",
+	"js/ts.preferences.importModuleSpecifier": "relative",
+	"js/ts.preferences.importModuleSpecifierEnding": "minimal",
 	"files.associations": {
 		"*.css": "tailwindcss"
-	}
+	},
+	"svelte.enable-ts-plugin": true
 }

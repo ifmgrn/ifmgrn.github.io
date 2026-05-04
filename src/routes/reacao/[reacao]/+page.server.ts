@@ -11,7 +11,9 @@ export async function load({ params, locals }) {
 			reaction_id: reacao,
 		})
 		.single();
-	if (!reaction) error(STATUS_CODE.BAD_REQUEST, "A reação não existe.");
+	if (!reaction) {
+		error(STATUS_CODE.BAD_REQUEST, "A reação não existe.");
+	}
 
 	return { reaction };
 }
