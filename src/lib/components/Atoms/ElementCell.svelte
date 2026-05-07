@@ -1,5 +1,6 @@
 <script lang="ts">
-	const { element, legend }: { element: Atom; legend?: boolean } = $props();
+	export type RequiredAtomFields = SomeKeys<Atom, "chemical_serie" | "state" | "atomic_number" | "symbol" | "name" | "atomic_weight" | "short_lived">;
+	const { element, legend }: { element: Pick<Atom, RequiredAtomFields>; legend?: boolean } = $props();
 
 	const classes = [
 		"Elemento",

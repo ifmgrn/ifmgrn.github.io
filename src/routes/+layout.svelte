@@ -8,8 +8,8 @@
 	import ifmgLogo from '$lib/assets/ifmg-logo.webp';
 	import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
 
-	let { data, children } = $props();
-	let { supabase, session } = $derived(data);
+	const { data, children } = $props();
+	const { supabase, session } = $derived(data);
 	const { userMetadata } = $derived(data);
 
 	const capitalize = (str: string) => str[0].toUpperCase() + str.slice(1);

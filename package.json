@@ -12,7 +12,8 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"format": "biome check --no-errors-on-unmatched --error-on-warnings --write"
+		"format": "biome check --no-errors-on-unmatched --error-on-warnings --write",
+		"update-types": "supabase gen types --lang typescript --linked --schema public > ./src/lib/types/database.d.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.14",
@@ -24,7 +25,9 @@
 		"@tailwindcss/forms": "^0.5.11",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.2.4",
+		"@types/node": "^25.6.0",
 		"lefthook": "^2.1.6",
+		"supabase": "^2.98.2",
 		"svelte": "^5.55.5",
 		"svelte-check": "^4.4.7",
 		"tailwindcss": "^4.2.4",
@@ -36,7 +39,6 @@
 		"@supabase/ssr": "^0.10.2",
 		"@supabase/supabase-js": "^2.105.1",
 		"carta-md": "^4.11.2",
-		"isomorphic-dompurify": "^3.12.0",
-		"tiny-cookie": "2.5.1"
+		"isomorphic-dompurify": "^3.12.0"
 	}
 }

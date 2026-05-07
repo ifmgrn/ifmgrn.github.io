@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.4.13/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.14/schema.json",
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -8,7 +8,12 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**", "!!build", "!!pnpm-*.yaml"]
+		"includes": [
+			"**",
+			"!!build",
+			"!!pnpm-*.yaml",
+			"!src/lib/types/database.d.ts"
+		]
 	},
 	"formatter": {
 		"enabled": true,

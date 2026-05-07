@@ -1,7 +1,8 @@
 <script lang="ts">
-	import ElementCell from "./ElementCell.svelte";
+	import ElementCell, { type RequiredAtomFields } from "./ElementCell.svelte";
 
-	const { atoms }: { atoms: Atom[] } = $props();
+	type MinimalAtom = Pick<Atom, "group" | "period" | "chemical_serie" | "atomic_number" | RequiredAtomFields>;
+	const { atoms }: { atoms: MinimalAtom[] } = $props();
 
 	let maxGroup = 0;
 	let maxPeriod = 0;
@@ -11,11 +12,11 @@
 		if (a.period > maxPeriod) { maxPeriod = a.period; }
 	}
 
-	const mainTable: (Atom | null)[][] = Array.from({ length: maxPeriod }, () =>
+	const mainTable: (MinimalAtom | null)[][] = Array.from({ length: maxPeriod }, () =>
 		new Array(maxGroup).fill(null),
 	);
-	const lanthanides: Atom[] = [];
-	const actinides: Atom[] = [];
+	const lanthanides: MinimalAtom[] = [];
+	const actinides: MinimalAtom[] = [];
 
 	for (const a of atoms) {
 		const { period, group, chemical_serie } = a;

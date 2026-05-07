@@ -9,6 +9,9 @@ templates:
 pre-commit:
   piped: true
   jobs:
+    - name: updating database types
+      run: "{run} update-types"
+
     - name: formatting and linting
       run: "{run} format --colors=off {staged_files}"
       stage_fixed: true

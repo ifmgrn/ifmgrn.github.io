@@ -13,3 +13,12 @@ export const config: Config = {
 		allowQuery: SEARCH_PARAMS,
 	},
 };
+
+export async function load({ cookies, locals: { safeGetSession } }) {
+	const { session, user } = await safeGetSession();
+	return {
+		session,
+		user,
+		cookies: cookies.getAll(),
+	};
+}

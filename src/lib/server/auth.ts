@@ -9,6 +9,7 @@ import {
 } from "$env/static/public";
 import { STATUS_CODE } from "$lib/consts";
 import type { SuapUserData } from "$lib/suap";
+import type { Database } from "$lib/types/database";
 
 const BASE_URL = "https://suap.ifmg.edu.br";
 const AUTHORIZATION_RELATIVE_URL = "/o/authorize/";
@@ -44,22 +45,25 @@ async function generateCodeChallenge(verifier: string) {
 }
 
 export async function signInWithOauth() {
-	const request = getRequestEvent();
-	if (request.locals.user) {
-		error(403, "User is already logged in.");
+	const {
+		cookies,
+		locals: { user },
+	} = getRequestEvent();
+	if (user) {
+		error(STATUS_CODE.FORBIDDEN, "User is already logged in.");
 	}
 
 	const cookiesMaxAge = 60 * 10;
 
 	const codeVerifier = generateCodeVerifier();
 	const codeChallenge = await generateCodeChallenge(codeVerifier);
-	request.cookies.set(PKCE_VERIFIER_COOKIE, codeVerifier, {
+	cookies.set(PKCE_VERIFIER_COOKIE, codeVerifier, {
 		path: "/",
 		maxAge: cookiesMaxAge,
 	});
 
 	const state = crypto.randomUUID();
-	request.cookies.set(STATE_COOKIE, state, {
+	cookies.set(STATE_COOKIE, state, {
 		path: "/",
 		maxAge: cookiesMaxAge,
 	});
@@ -77,31 +81,39 @@ export async function signInWithOauth() {
 }
 
 export async function exchangeCodeForSession(next?: string) {
-	const request = getRequestEvent();
-	if (request.locals.user) {
+	const {
+		cookies,
+		url,
+		fetch,
+		locals: { supabase, user },
+	} = getRequestEvent();
+
+	const code = url.searchParams.get("code");
+	const returnedState = url.searchParams.get("state");
+	const originalState = cookies.get(STATE_COOKIE);
+	const codeVerifier = cookies.get(PKCE_VERIFIER_COOKIE);
+
+	// Sempre delete cookies de auth independentemente de erros
+	cookies.delete(STATE_COOKIE, { path: "/" });
+	cookies.delete(PKCE_VERIFIER_COOKIE, { path: "/" });
+
+	if (user) {
 		error(STATUS_CODE.FORBIDDEN, "User is already logged in.");
 	}
 
-	const code = request.url.searchParams.get("code");
 	if (!code) {
 		error(STATUS_CODE.BAD_REQUEST, "No code was specified in the URL");
 	}
 
-	const returnedState = request.url.searchParams.get("state");
-	const originalState = request.cookies.get(STATE_COOKIE);
 	if (!returnedState || returnedState !== originalState) {
 		error(STATUS_CODE.BAD_REQUEST, "Invalid OAuth state");
 	}
 
-	const codeVerifier = request.cookies.get(PKCE_VERIFIER_COOKIE);
 	if (!codeVerifier) {
-		error(STATUS_CODE.BAD_REQUEST, "Invalid PKCE verifier");
+		error(STATUS_CODE.BAD_REQUEST, "No PKCE verifier was found in cookies.");
 	}
 
-	request.cookies.delete(STATE_COOKIE, { path: "/" });
-	request.cookies.delete(PKCE_VERIFIER_COOKIE, { path: "/" });
-
-	const tokenRes = await request.fetch(BASE_URL + TOKEN_RELATIVE_URL, {
+	const tokenRes = await fetch(BASE_URL + TOKEN_RELATIVE_URL, {
 		method: "POST",
 		headers: { "Content-Type": "application/x-www-form-urlencoded" },
 		body: new URLSearchParams({
@@ -114,14 +126,22 @@ export async function exchangeCodeForSession(next?: string) {
 		}),
 	});
 
-	const tokenData = await tokenRes.json();
-	if (!tokenData?.access_token) {
+	const tokenData = (await tokenRes.json()) as {
+		access_token: string;
+		// 3600s = 1h
+		expires_in: number;
+		// Bearer
+		token_type: string;
+		scope: string;
+		refresh_token: string;
+	};
+	if (!tokenData.access_token) {
 		error(STATUS_CODE.BAD_REQUEST, "Access token is invalid");
 	}
 
-	const userRes = await request.fetch(BASE_URL + USER_INFO_RELATIVE_URL, {
+	const userRes = await fetch(BASE_URL + USER_INFO_RELATIVE_URL, {
 		headers: {
-			Authorization: `Bearer ${tokenData.access_token}`,
+			Authorization: `${tokenData.token_type} ${tokenData.access_token}`,
 		},
 	});
 	if (!userRes.ok) {
@@ -137,14 +157,19 @@ export async function exchangeCodeForSession(next?: string) {
 		);
 	}
 
-	const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SECRET_KEY, {
-		auth: {
-			autoRefreshToken: false,
-			persistSession: false,
+	const supabaseAdmin = createClient<Database>(
+		PUBLIC_SUPABASE_URL,
+		SUPABASE_SECRET_KEY,
+		{
+			auth: {
+				autoRefreshToken: false,
+				detectSessionInUrl: false,
+				persistSession: false,
+			},
 		},
-	});
+	);
 
-	const userMetadata: UserMetadata = {
+	const userMetadata: UserMetadata & { suap_id: number } = {
 		suap_id: suapUser.id,
 		ra: suapUser.matricula,
 		name: suapUser.vinculo.nome,
@@ -155,7 +180,7 @@ export async function exchangeCodeForSession(next?: string) {
 		photo_relurl: suapUser.url_foto_150x200,
 	};
 
-	const { data: user } = await supabaseAdmin
+	const { data: userAuth } = await supabaseAdmin
 		.from("suap_users")
 		.select("suap_id, auth_id")
 		.eq("suap_id", suapUser.id)
@@ -163,12 +188,11 @@ export async function exchangeCodeForSession(next?: string) {
 
 	// Garante que os nossos dados estão sincronizados com o do SUAP
 	let authId: string | undefined;
-	if (user) {
+	if (userAuth) {
 		authId = (
-			await supabaseAdmin.auth.admin.updateUserById(user.auth_id, {
+			await supabaseAdmin.auth.admin.updateUserById(userAuth.auth_id, {
 				email: suapUser.email,
 				email_confirm: true,
-				user_metadata: userMetadata,
 			})
 		).data.user?.id;
 	} else {
@@ -176,7 +200,6 @@ export async function exchangeCodeForSession(next?: string) {
 			await supabaseAdmin.auth.admin.createUser({
 				email: suapUser.email,
 				email_confirm: true,
-				user_metadata: userMetadata,
 			})
 		).data.user?.id;
 	}
@@ -199,7 +222,7 @@ export async function exchangeCodeForSession(next?: string) {
 	}
 
 	// Verify OTP to create session
-	await request.locals.supabase.auth.verifyOtp({
+	await supabase.auth.verifyOtp({
 		token_hash: magicLink.properties.hashed_token,
 		type: "email",
 	});
