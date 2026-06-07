@@ -1,3 +1,8 @@
+allowBuilds:
+  esbuild: true
+  lefthook: true
+minimumReleaseAgeExclude:
+  - svelte@5.56.3
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@tailwindcss/oxide'

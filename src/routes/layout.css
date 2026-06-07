@@ -3,7 +3,6 @@
 @import "@skeletonlabs/skeleton-svelte";
 @import "@skeletonlabs/skeleton/themes/terminus";
 @plugin "@tailwindcss/forms";
-@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
@@ -11,12 +10,30 @@
 .input,
 .textarea,
 .input-group {
-	background-color: var(--color-surface-50-950);
 	color: var(--color-surface-950-50);
+	background-color: var(--color-surface-50-950);
 }
 
-.prose {
-	--tw-prose-body: inherit;
+.markdown-body {
+	p {
+		@apply my-2 leading-7;
+	}
+
+	ul {
+		@apply list-disc ml-6 my-2 ps-[1.625em];
+	}
+
+	ol {
+		@apply list-decimal ml-6 my-2 ps-[1.625em];
+	}
+
+	h1 {
+		@apply text-3xl font-bold mt-8 mb-3;
+	}
+
+	h2 {
+		@apply text-2xl font-semibold mt-6 mb-2;
+	}
 }
 
 .Gás {

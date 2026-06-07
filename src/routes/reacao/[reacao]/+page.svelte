@@ -50,7 +50,5 @@ const embedUrl = $derived(`https://www.youtube-nocookie.com/embed/${reaction.you
 
 <section>
 <h2 id="descricao" class="h2 text-center">Instruções</h2>
-<div class="prose dark:prose-invert max-w-none">
-	<Markdown {carta} value={reaction.description} />
-</div>
+<Markdown {carta} value={reaction.description} />
 </section>
