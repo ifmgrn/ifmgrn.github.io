@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"license": "AGPL-3.0-or-later",
-	"packageManager": "pnpm@10.33.2",
+	"packageManager": "pnpm@11.5.2",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -16,29 +16,29 @@
 		"update-types": "supabase gen types --lang typescript --linked --schema public > ./src/lib/types/database.d.ts"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.14",
+		"@biomejs/biome": "2.4.16",
 		"@skeletonlabs/skeleton": "^4.15.2",
 		"@skeletonlabs/skeleton-svelte": "^4.15.2",
 		"@sveltejs/adapter-vercel": "^6.3.3",
-		"@sveltejs/kit": "^2.59.0",
-		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"@sveltejs/kit": "^2.63.0",
+		"@sveltejs/vite-plugin-svelte": "^7.1.2",
 		"@tailwindcss/forms": "^0.5.11",
 		"@tailwindcss/typography": "^0.5.19",
-		"@tailwindcss/vite": "^4.2.4",
-		"@types/node": "^25.6.0",
-		"lefthook": "^2.1.6",
-		"supabase": "^2.98.2",
-		"svelte": "^5.55.5",
-		"svelte-check": "^4.4.7",
-		"tailwindcss": "^4.2.4",
+		"@tailwindcss/vite": "^4.3.0",
+		"@types/node": "^25.9.2",
+		"lefthook": "^2.1.9",
+		"supabase": "^2.105.0",
+		"svelte": "^5.56.3",
+		"svelte-check": "^4.6.0",
+		"tailwindcss": "^4.3.0",
 		"typescript": "^6.0.3",
-		"vite": "^8.0.10"
+		"vite": "^8.0.16"
 	},
 	"dependencies": {
-		"@lucide/svelte": "^1.14.0",
-		"@supabase/ssr": "^0.10.2",
-		"@supabase/supabase-js": "^2.105.1",
+		"@lucide/svelte": "^1.17.0",
+		"@supabase/ssr": "^0.10.3",
+		"@supabase/supabase-js": "^2.107.0",
 		"carta-md": "^4.11.2",
-		"isomorphic-dompurify": "^3.12.0"
+		"isomorphic-dompurify": "^3.16.0"
 	}
 }
