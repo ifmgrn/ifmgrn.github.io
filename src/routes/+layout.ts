@@ -43,21 +43,22 @@ export async function load({ fetch, depends, data }) {
 	 * safe, and on the server, it reads `session` from the `LayoutData`, which
 	 * safely checked the session using `safeGetSession`.
 	 */
-	/*const {
+	const {
 		data: { session },
-	} = await supabase.auth.getSession();*/
+	} = await supabase.auth.getSession();
 
 	let userMetadata: null | UserMetadata = null;
-	if (data.user && isBrowser()) {
+	if (session?.user && isBrowser()) {
 		const { data: user } = await supabase
 			.from("suap_users")
 			.select("auth_id, name, ra, role, photo_relurl")
-			.eq("auth_id", data.user.id)
+			.eq("auth_id", session.user.id)
 			.single();
+
 		if (user) {
 			userMetadata = strictOmit(user, ["auth_id"]) as Strict<UserMetadata>;
 		}
 	}
 
-	return { supabase, session: data.session, userMetadata };
+	return { supabase, session, userMetadata };
 }
