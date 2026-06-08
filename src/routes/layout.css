@@ -3,6 +3,9 @@
 @import "@skeletonlabs/skeleton-svelte";
 @import "@skeletonlabs/skeleton/themes/terminus";
 @plugin "@tailwindcss/forms";
+@import "github-markdown-css/github-markdown.css";
+@import "carta-md/default.css";
+@import "katex/dist/katex.css";
 
 @custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
@@ -14,26 +17,33 @@
 	background-color: var(--color-surface-50-950);
 }
 
+[data-mode="dark"] .carta-theme__default {
+	--border-color: var(--border-color-dark);
+	--selection-color: var(--selection-color-dark);
+	--focus-outline: var(--focus-outline-dark);
+	--hover-color: var(--hover-color-dark);
+	--caret-color: var(--caret-color-dark);
+	--text-color: var(--text-color-dark);
+}
+
 .markdown-body {
-	p {
-		@apply my-2 leading-7;
-	}
+	--bgColor-default: inherit;
 
 	ul {
-		@apply list-disc ml-6 my-2 ps-[1.625em];
+		@apply list-disc;
 	}
 
 	ol {
-		@apply list-decimal ml-6 my-2 ps-[1.625em];
+		@apply list-decimal;
 	}
+}
 
-	h1 {
-		@apply text-3xl font-bold mt-8 mb-3;
-	}
-
-	h2 {
-		@apply text-2xl font-semibold mt-6 mb-2;
-	}
+.carta-font-code {
+	font-family: var(--font-mono);
+	font-size: 1.1rem;
+	line-height: 1.1rem;
+	color: inherit !important;
+	letter-spacing: normal;
 }
 
 .Gás {

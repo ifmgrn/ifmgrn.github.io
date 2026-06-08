@@ -8,6 +8,7 @@
 		["Classificações:", reaction.classifications.join(", ")],
 		["Reagentes:", reaction.reactants.join(", ")],
 		["Produtos:", reaction.products.join(", ")],
+		["Catalisadores:", reaction.catalysts.join(", ")],
 		["Equação:", reaction.equation]
 	];
 </script>

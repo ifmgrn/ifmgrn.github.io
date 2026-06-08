@@ -34,10 +34,13 @@
 		"vite": "^8.0.16"
 	},
 	"dependencies": {
+		"@cartamd/plugin-math": "^4.3.1",
 		"@lucide/svelte": "^1.17.0",
 		"@supabase/ssr": "^0.10.3",
 		"@supabase/supabase-js": "^2.107.0",
 		"carta-md": "^4.11.2",
-		"isomorphic-dompurify": "^3.16.0"
+		"github-markdown-css": "^5.9.0",
+		"isomorphic-dompurify": "^3.16.0",
+		"katex": "^0.17.0"
 	}
 }

@@ -56,69 +56,11 @@ export type Database = {
         }
         Relationships: []
       }
-      bonds: {
-        Row: {
-          atom_id: number
-          created_at: string
-          molecule_id: string
-          quantity: number
-        }
-        Insert: {
-          atom_id: number
-          created_at?: string
-          molecule_id: string
-          quantity?: number
-        }
-        Update: {
-          atom_id?: number
-          created_at?: string
-          molecule_id?: string
-          quantity?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bonds_molecule_id_fkey"
-            columns: ["molecule_id"]
-            isOneToOne: false
-            referencedRelation: "molecules"
-            referencedColumns: ["inchikey"]
-          },
-          {
-            foreignKeyName: "molecule_atoms_atom_id_fkey"
-            columns: ["atom_id"]
-            isOneToOne: false
-            referencedRelation: "atoms"
-            referencedColumns: ["atomic_number"]
-          },
-        ]
-      }
-      molecules: {
-        Row: {
-          created_at: string
-          formula: string
-          inchi: string
-          inchikey: string
-          name: string
-        }
-        Insert: {
-          created_at?: string
-          formula: string
-          inchi: string
-          inchikey: string
-          name: string
-        }
-        Update: {
-          created_at?: string
-          formula?: string
-          inchi?: string
-          inchikey?: string
-          name?: string
-        }
-        Relationships: []
-      }
       reactions: {
         Row: {
-          classifications: Database["public"]["Enums"]["reaction_type"][] | null
+          catalysts: string[]
+          catalysts_tsv: unknown
+          classifications: string[] | null
           classifications_tsv: unknown
           created_at: string
           description: string | null
@@ -127,15 +69,17 @@ export type Database = {
           id: number
           name: string
           name_fts: unknown
+          products: string[]
           products_tsv: unknown
+          reactants: string[]
           reactants_tsv: unknown
           user_id: number | null
           youtube_video_id: string | null
         }
         Insert: {
-          classifications?:
-            | Database["public"]["Enums"]["reaction_type"][]
-            | null
+          catalysts?: string[]
+          catalysts_tsv?: unknown
+          classifications?: string[] | null
           classifications_tsv?: unknown
           created_at?: string
           description?: string | null
@@ -144,15 +88,17 @@ export type Database = {
           id?: number
           name: string
           name_fts?: unknown
+          products: string[]
           products_tsv?: unknown
+          reactants: string[]
           reactants_tsv?: unknown
           user_id?: number | null
           youtube_video_id?: string | null
         }
         Update: {
-          classifications?:
-            | Database["public"]["Enums"]["reaction_type"][]
-            | null
+          catalysts?: string[]
+          catalysts_tsv?: unknown
+          classifications?: string[] | null
           classifications_tsv?: unknown
           created_at?: string
           description?: string | null
@@ -161,7 +107,9 @@ export type Database = {
           id?: number
           name?: string
           name_fts?: unknown
+          products?: string[]
           products_tsv?: unknown
+          reactants?: string[]
           reactants_tsv?: unknown
           user_id?: number | null
           youtube_video_id?: string | null
@@ -173,48 +121,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "suap_users"
             referencedColumns: ["suap_id"]
-          },
-        ]
-      }
-      species: {
-        Row: {
-          created_at: string
-          molecule_id: string
-          phase: Database["public"]["Enums"]["phase"] | null
-          quantity: number
-          reaction_id: number
-          role: Database["public"]["Enums"]["specie_role"]
-        }
-        Insert: {
-          created_at?: string
-          molecule_id: string
-          phase?: Database["public"]["Enums"]["phase"] | null
-          quantity?: number
-          reaction_id: number
-          role: Database["public"]["Enums"]["specie_role"]
-        }
-        Update: {
-          created_at?: string
-          molecule_id?: string
-          phase?: Database["public"]["Enums"]["phase"] | null
-          quantity?: number
-          reaction_id?: number
-          role?: Database["public"]["Enums"]["specie_role"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "reaction_molecules_reaction_id_fkey"
-            columns: ["reaction_id"]
-            isOneToOne: false
-            referencedRelation: "reactions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "species_molecule_id_fkey"
-            columns: ["molecule_id"]
-            isOneToOne: false
-            referencedRelation: "molecules"
-            referencedColumns: ["inchikey"]
           },
         ]
       }
@@ -259,7 +165,8 @@ export type Database = {
       get_reaction_by_id: {
         Args: { reaction_id: number }
         Returns: {
-          classifications: Database["public"]["Enums"]["reaction_type"][]
+          catalysts: string[]
+          classifications: string[]
           description: string
           equation: string
           id: number
@@ -280,7 +187,8 @@ export type Database = {
               reactants_q?: string
             }
             Returns: {
-              classifications: Database["public"]["Enums"]["reaction_type"][]
+              catalysts: string[]
+              classifications: string[]
               description: string
               equation: string
               id: number
@@ -294,9 +202,9 @@ export type Database = {
         | {
             Args: { l: number; q: string }
             Returns: {
-              classifications:
-                | Database["public"]["Enums"]["reaction_type"][]
-                | null
+              catalysts: string[]
+              catalysts_tsv: unknown
+              classifications: string[] | null
               classifications_tsv: unknown
               created_at: string
               description: string | null
@@ -305,7 +213,9 @@ export type Database = {
               id: number
               name: string
               name_fts: unknown
+              products: string[]
               products_tsv: unknown
+              reactants: string[]
               reactants_tsv: unknown
               user_id: number | null
               youtube_video_id: string | null

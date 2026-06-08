@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ChemicalInput from "$lib/components/ChemicalInput.svelte";
 	import ReactionsGrid from "$lib/components/Reactions/ReactionsGrid.svelte";
 	import { URL_PARAMS } from "$lib/consts.js";
 
@@ -13,7 +12,7 @@
   <meta name="description" content="Um banco de dados de reações químicas onde você pode pesquisar, visualizar vídeos e ver detalhes sobre reações químicas.">
 </svelte:head>
 
-<form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+<form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto_auto] gap-4 items-end">
 	<label class="label">
 		<span class="label-text">Nome</span>
 		<input
@@ -27,22 +26,12 @@
 	
 	<label class="label">
 		<span class="label-text">Reagentes</span>
-		<ChemicalInput inputProps={{
-			name: URL_PARAMS.SEARCH_REACTANT, 
-			value: data.reactants, 
-			type: "search",
-			placeholder: "Nome ou fórmula"
-		}} />
+		<input class="input" name={URL_PARAMS.SEARCH_REACTANT} value={data.reactants} type="search" placeholder="Nome ou fórmula">
 	</label>
 	
 	<label class="label">
 		<span class="label-text">Produtos</span>
-		<ChemicalInput inputProps={{ 
-			name: URL_PARAMS.SEARCH_PRODUCT, 
-			value: data.products,  
-			type: "search",
-			placeholder: "Nome ou fórmula"
-		}} />
+		<input class="input" name={URL_PARAMS.SEARCH_PRODUCT} value={data.products} type="search" placeholder="Nome ou fórmula">
 	</label>
 
 	<label class="label">
@@ -56,7 +45,13 @@
 		>
 	</label>
 		
-	<button type="submit" aria-label="Pesquisar" class="hidden"></button>
+	<button type="submit" aria-label="Pesquisar" class="btn preset-filled-primary-50-950 w-fit h-fit">
+		>
+	</button>
+
+	{#if data.session}
+		<a href="/nova-reacao" aria-label="Adicionar reação" class="btn preset-filled-surface-100-900">+</a>
+	{/if}
 </form>
 
 <ReactionsGrid reactions={data.reactions} />

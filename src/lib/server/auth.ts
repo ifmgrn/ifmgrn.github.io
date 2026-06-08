@@ -19,6 +19,7 @@ const SCOPES = ["identificacao"];
 
 const PKCE_VERIFIER_COOKIE = "pkce_verifier";
 const STATE_COOKIE = "oauth_state";
+const COOKIES_PATH = "/api/auth/suap/callback";
 
 function base64url(buffer: Uint8Array) {
 	return Buffer.from(buffer)
@@ -58,13 +59,13 @@ export async function signInWithOauth() {
 	const codeVerifier = generateCodeVerifier();
 	const codeChallenge = await generateCodeChallenge(codeVerifier);
 	cookies.set(PKCE_VERIFIER_COOKIE, codeVerifier, {
-		path: "/",
+		path: COOKIES_PATH,
 		maxAge: cookiesMaxAge,
 	});
 
 	const state = crypto.randomUUID();
 	cookies.set(STATE_COOKIE, state, {
-		path: "/",
+		path: COOKIES_PATH,
 		maxAge: cookiesMaxAge,
 	});
 
@@ -94,8 +95,8 @@ export async function exchangeCodeForSession(next?: string) {
 	const codeVerifier = cookies.get(PKCE_VERIFIER_COOKIE);
 
 	// Sempre delete cookies de auth independentemente de erros
-	cookies.delete(STATE_COOKIE, { path: "/" });
-	cookies.delete(PKCE_VERIFIER_COOKIE, { path: "/" });
+	cookies.delete(STATE_COOKIE, { path: COOKIES_PATH });
+	cookies.delete(PKCE_VERIFIER_COOKIE, { path: COOKIES_PATH });
 
 	if (user) {
 		error(STATUS_CODE.FORBIDDEN, "User is already logged in.");
