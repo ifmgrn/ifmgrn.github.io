@@ -12,7 +12,8 @@
 			"**",
 			"!!build",
 			"!!pnpm-*.yaml",
-			"!src/lib/types/database.d.ts"
+			"!src/lib/types/database.d.ts",
+			"!**/*.js"
 		]
 	},
 	"formatter": {

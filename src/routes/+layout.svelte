@@ -43,7 +43,7 @@
 </svelte:head>
 
 <header>
-	<nav class="grid grid-cols-3 items-center h-14 border-b border-surface-200-800">
+	<nav class="grid grid-cols-3 items-center h-14">
 		<div class="justify-self-start flex items-center gap-2">
 			<a href="/">
 				<img src={ifmgLogo} class="h-8" alt="Logo">
@@ -101,9 +101,10 @@
 			{/if}
 		</div>
 	</nav>
+	<hr class="hr mt-2">
 </header>
 
-<main class="mt-6">
+<main class="mt-4">
 	{@render children()}
 	<a href="#top" class="fixed bottom-4 right-4 px-4 py-2">
 		<ArrowUpToLine />

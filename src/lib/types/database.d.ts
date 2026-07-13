@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -65,7 +65,6 @@ export type Database = {
           created_at: string
           description: string | null
           equation: string | null
-          fts: unknown
           id: number
           name: string
           name_fts: unknown
@@ -73,7 +72,8 @@ export type Database = {
           products_tsv: unknown
           reactants: string[]
           reactants_tsv: unknown
-          user_id: number | null
+          slug: string
+          user_id: number
           youtube_video_id: string | null
         }
         Insert: {
@@ -84,7 +84,6 @@ export type Database = {
           created_at?: string
           description?: string | null
           equation?: string | null
-          fts?: unknown
           id?: number
           name: string
           name_fts?: unknown
@@ -92,7 +91,8 @@ export type Database = {
           products_tsv?: unknown
           reactants: string[]
           reactants_tsv?: unknown
-          user_id?: number | null
+          slug: string
+          user_id: number
           youtube_video_id?: string | null
         }
         Update: {
@@ -103,7 +103,6 @@ export type Database = {
           created_at?: string
           description?: string | null
           equation?: string | null
-          fts?: unknown
           id?: number
           name?: string
           name_fts?: unknown
@@ -111,7 +110,8 @@ export type Database = {
           products_tsv?: unknown
           reactants?: string[]
           reactants_tsv?: unknown
-          user_id?: number | null
+          slug?: string
+          user_id?: number
           youtube_video_id?: string | null
         }
         Relationships: [
@@ -126,6 +126,7 @@ export type Database = {
       }
       suap_users: {
         Row: {
+          anonymous: boolean
           auth_id: string
           created_at: string | null
           name: string
@@ -136,6 +137,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          anonymous?: boolean
           auth_id: string
           created_at?: string | null
           name: string
@@ -146,6 +148,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          anonymous?: boolean
           auth_id?: string
           created_at?: string | null
           name?: string
@@ -173,79 +176,53 @@ export type Database = {
           name: string
           products: string[]
           reactants: string[]
-          user_id: number
+          user_name: string
           youtube_video_id: string
         }[]
       }
-      search_reactions:
-        | {
-            Args: {
-              classification_q?: string
-              l?: number
-              products_q?: string
-              q?: string
-              reactants_q?: string
-            }
-            Returns: {
-              catalysts: string[]
-              classifications: string[]
-              description: string
-              equation: string
-              id: number
-              name: string
-              products: string[]
-              reactants: string[]
-              user_id: number
-              youtube_video_id: string
-            }[]
-          }
-        | {
-            Args: { l: number; q: string }
-            Returns: {
-              catalysts: string[]
-              catalysts_tsv: unknown
-              classifications: string[] | null
-              classifications_tsv: unknown
-              created_at: string
-              description: string | null
-              equation: string | null
-              fts: unknown
-              id: number
-              name: string
-              name_fts: unknown
-              products: string[]
-              products_tsv: unknown
-              reactants: string[]
-              reactants_tsv: unknown
-              user_id: number | null
-              youtube_video_id: string | null
-            }[]
-            SetofOptions: {
-              from: "*"
-              to: "reactions"
-              isOneToOne: false
-              isSetofReturn: true
-            }
-          }
-        | {
-            Args: {
-              l: number
-              products_q?: string
-              q: string
-              reactants_q?: string
-            }
-            Returns: {
-              classifications: Database["public"]["Enums"]["reaction_type"][]
-              description: string
-              equation: string
-              id: number
-              name: string
-              products: string
-              reactants: string
-              user_id: number
-              youtube_video_id: string
-            }[]
-          }
+      get_reaction_by_slug: {
+        Args: { reaction_slug: string }
+        Returns: {
+          catalysts: string[]
+          classifications: string[]
+          description: string
+          equation: string
+          id: number
+          name: string
+          products: string[]
+          reactants: string[]
+          user_id: number
+          user_name: string
+          youtube_video_id: string
+        }[]
+      }
+      search_reactions: {
+        Args: {
+          catalysts_q?: string
+          classification_q?: string
+          l?: number
+          products_q?: string
+          q?: string
+          reactants_q?: string
+        }
+        Returns: {
+          catalysts: string[]
+          classifications: string[]
+          description: string
+          equation: string
+          id: number
+          name: string
+          products: string[]
+          reactants: string[]
+          slug: string
+          user_name: string
+          youtube_video_id: string
+        }[]
+      }
+      text_array_max_length: {
+        Args: { arr: string[]; max_len: number }
+        Returns: boolean
+      }
     }
     Enums: {
       chemical_serie:
@@ -260,15 +237,6 @@ export type Database = {
         | "Lantanídeo"
         | "Actinídeo"
       phase: "Gás" | "Líquido" | "Sólido" | "Aquoso"
-      reaction_type:
-        | "Síntese"
-        | "Decomposição"
-        | "Substituição"
-        | "Metátese"
-        | "Oxirredução"
-        | "Combustão"
-        | "Ácido-Base"
-      specie_role: "Reagente" | "Produto" | "Catalisador"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -409,16 +377,6 @@ export const Constants = {
         "Actinídeo",
       ],
       phase: ["Gás", "Líquido", "Sólido", "Aquoso"],
-      reaction_type: [
-        "Síntese",
-        "Decomposição",
-        "Substituição",
-        "Metátese",
-        "Oxirredução",
-        "Combustão",
-        "Ácido-Base",
-      ],
-      specie_role: ["Reagente", "Produto", "Catalisador"],
     },
   },
 } as const

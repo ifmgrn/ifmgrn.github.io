@@ -1,3 +1,5 @@
+import { katex } from "$lib/mhchem";
+
 export function strictPick<T extends object, K extends keyof T>(
 	obj: T,
 	keys: K[],
@@ -22,4 +24,17 @@ export function strictOmit<T extends object, K extends keyof T>(
 		}
 	}
 	return result as Omit<T, K>;
+}
+
+export function isEquationValid(equation: string) {
+	try {
+		katex.renderToString(`\\ce{${equation}}`, {
+			throwOnError: true,
+			trust: false,
+			strict: true,
+		});
+		return true;
+	} catch {
+		return false;
+	}
 }

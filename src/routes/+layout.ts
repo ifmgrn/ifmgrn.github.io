@@ -51,7 +51,7 @@ export async function load({ fetch, depends, data }) {
 	if (session?.user && isBrowser()) {
 		const { data: user } = await supabase
 			.from("suap_users")
-			.select("auth_id, name, ra, role, photo_relurl")
+			.select("suap_id, auth_id, name, ra, role, photo_relurl")
 			.eq("auth_id", session.user.id)
 			.single();
 

@@ -25,6 +25,7 @@ declare global {
 	type SomeKeys<T, K extends keyof T> = K;
 
 	interface UserMetadata {
+		suap_id: number;
 		name: string;
 		ra: string;
 		role: string;
@@ -32,7 +33,7 @@ declare global {
 	}
 
 	type Reaction = ArrayElement<
-		Database["public"]["Functions"]["get_reaction_by_id"]["Returns"]
+		Database["public"]["Functions"]["search_reactions"]["Returns"]
 	>;
 
 	type Atom = Tables<"atoms">;

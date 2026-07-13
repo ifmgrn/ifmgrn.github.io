@@ -50,7 +50,7 @@
 	</button>
 
 	{#if data.session}
-		<a href="/nova-reacao" aria-label="Adicionar reação" class="btn preset-filled-surface-100-900">+</a>
+		<a href="/atualizar-reacao" aria-label="Adicionar reação" class="btn preset-filled-surface-100-900">+</a>
 	{/if}
 </form>
 
