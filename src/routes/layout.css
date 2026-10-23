@@ -13,96 +13,100 @@
 .input,
 .textarea,
 .input-group {
-	color: var(--color-surface-950-50);
-	background-color: var(--color-surface-50-950);
+  color: var(--color-surface-950-50);
+  background-color: var(--color-surface-50-950);
 }
 
 .input-error {
-	--tw-ring-color: var(--color-error-500);
+  --tw-ring-color: var(--color-error-500);
 }
 
 [data-mode="dark"] .carta-theme__default {
-	--border-color: var(--border-color-dark);
-	--selection-color: var(--selection-color-dark);
-	--focus-outline: var(--focus-outline-dark);
-	--hover-color: var(--hover-color-dark);
-	--caret-color: var(--caret-color-dark);
-	--text-color: var(--text-color-dark);
+  --border-color: var(--border-color-dark);
+  --selection-color: var(--selection-color-dark);
+  --focus-outline: var(--focus-outline-dark);
+  --hover-color: var(--hover-color-dark);
+  --caret-color: var(--caret-color-dark);
+  --text-color: var(--text-color-dark);
 }
 
 .markdown-body {
-	--bgColor-default: inherit;
+  --bgColor-default: inherit;
 
-	ul {
-		@apply list-disc;
-	}
+  ul {
+    @apply list-disc;
+  }
 
-	ol {
-		@apply list-decimal;
-	}
+  ol {
+    @apply list-decimal;
+  }
 }
 
 .carta-font-code {
-	font-family: var(--font-mono);
-	font-size: 1.1rem;
-	line-height: 1.1rem;
-	/* biome-ignore lint/complexity/noImportantStyles: override lib color */
-	color: inherit !important;
-	letter-spacing: normal;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  line-height: 1.1rem;
+  /* biome-ignore lint/complexity/noImportantStyles: override lib color */
+  color: inherit !important;
+  letter-spacing: normal;
+}
+
+.bg-youtube-icon {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>');
 }
 
 .Gás {
-	--name-color: #a12d1f;
+  --name-color: #a12d1f;
 }
 
 .Líquido {
-	--name-color: #3d7ba3;
+  --name-color: #3d7ba3;
 }
 
 .Sólido {
-	--name-color: initial;
+  --name-color: initial;
 }
 
 .Desconhecido {
-	--name-color: #f1ea66;
+  --name-color: #f1ea66;
 }
 
 .Não-Metal {
-	--color: #3996ea;
+  --color: #3996ea;
 }
 
 .Metal-Alcalino {
-	--color: #e94f3e;
+  --color: #e94f3e;
 }
 
 .Metal-Alcalino-Terroso {
-	--color: #f88a26;
+  --color: #f88a26;
 }
 
 .Metal-de-Transição {
-	--color: #ffd30b;
+  --color: #ffd30b;
 }
 
 .Metal-Pós-Transição {
-	--color: #36db7c;
+  --color: #36db7c;
 }
 
 .Semimetal {
-	--color: #2da78d;
+  --color: #2da78d;
 }
 
 .Halogênio {
-	--color: #f077a2;
+  --color: #f077a2;
 }
 
 .Gás-Nobre {
-	--color: #a35fc4;
+  --color: #a35fc4;
 }
 
 .Lantanídeo {
-	--color: #2b9e5e;
+  --color: #2b9e5e;
 }
 
 .Actinídeo {
-	--color: #32b79a;
+  --color: #32b79a;
 }

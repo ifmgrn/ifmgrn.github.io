@@ -1,65 +1,24 @@
-import { createServerClient } from "@supabase/ssr";
-import {
-	PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-	PUBLIC_SUPABASE_URL,
-} from "$env/static/public";
-import type { Database } from "$lib/types/database";
+import { createServerClient } from "@supabase/ssr"
+import type { Database } from "#lib/types/database.d.ts"
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "$app/env/public"
 
 export async function handle({ event, resolve }) {
-	event.locals.supabase = createServerClient<Database>(
-		PUBLIC_SUPABASE_URL,
-		PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-		{
-			cookies: {
-				getAll() {
-					return event.cookies.getAll();
-				},
-				setAll(cookiesToSet, headers) {
-					/**
-					 * Note: You have to add the `path` variable to the
-					 * set and remove method due to sveltekit's cookie API
-					 * requiring this to be set, setting the path to an empty string
-					 * will replicate previous/standard behavior (https://kit.svelte.dev/docs/types#public-types-cookies)
-					 */
-					for (const { name, value, options } of cookiesToSet) {
-						event.cookies.set(name, value, { ...options, path: "/" });
-					}
-					if (Object.keys(headers).length > 0) {
-						event.setHeaders(headers);
-					}
-				},
-			},
-		},
-	);
+  event.locals.supabase = createServerClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    cookies: {
+      getAll: () => event.cookies.getAll(),
+      setAll(cookiesToSet, headers) {
+        for (const { name, value, options } of cookiesToSet) {
+          event.cookies.set(name, value, options)
+        }
+        if (Object.keys(headers).length > 0) {
+          event.setHeaders(headers)
+        }
+      },
+    },
+  })
 
-	/**
-	 * Unlike `supabase.auth.getSession()`, which returns the session _without_
-	 * validating the JWT, this function also calls `getUser()` to validate the
-	 * JWT before returning the session.
-	 */
-	event.locals.safeGetSession = async () => {
-		const {
-			data: { session },
-		} = await event.locals.supabase.auth.getSession();
-		if (!session) {
-			return { session: null, user: null };
-		}
-
-		const {
-			data: { user },
-			error,
-		} = await event.locals.supabase.auth.getUser();
-		if (error) {
-			// JWT validation has failed
-			return { session: null, user: null };
-		}
-
-		return { session, user };
-	};
-
-	return resolve(event, {
-		filterSerializedResponseHeaders(name) {
-			return name === "content-range" || name === "x-supabase-api-version";
-		},
-	});
+  return resolve(event, {
+    filterSerializedResponseHeaders: name =>
+      name === "content-range" || name === "x-supabase-api-version",
+  })
 }

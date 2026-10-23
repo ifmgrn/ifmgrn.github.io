@@ -1,15 +1,14 @@
 {
-	"editor.formatOnSave": true,
-	"editor.codeActionsOnSave": {
-		"source.fixAll.biome": "explicit",
-		"source.organizeImports.biome": "explicit"
-	},
-	"editor.wordWrap": "on",
-	"editor.defaultFormatter": "biomejs.biome",
-	"js/ts.preferences.importModuleSpecifier": "relative",
-	"js/ts.preferences.importModuleSpecifierEnding": "minimal",
-	"files.associations": {
-		"*.css": "tailwindcss"
-	},
-	"svelte.enable-ts-plugin": true
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
+  },
+  "editor.wordWrap": "on",
+  "editor.defaultFormatter": "biomejs.biome",
+  "js/ts.preferences.importModuleSpecifierEnding": "js",
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "svelte.enable-ts-plugin": true
 }

@@ -1,5 +1,5 @@
-import { signInWithOauth } from "$lib/server/auth";
+import { signInWithOauth } from "#lib/server/auth.ts"
 
 export function GET() {
-	return signInWithOauth();
+  return signInWithOauth()
 }

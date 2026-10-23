@@ -1,5 +1,5 @@
-import { exchangeCodeForSession } from "$lib/server/auth";
+import { exchangeCodeForSession } from "#lib/server/auth.ts"
 
 export function GET() {
-	return exchangeCodeForSession("/");
+  return exchangeCodeForSession("/")
 }

@@ -1,8 +1,9 @@
 <script lang="ts">
-	import ElementCell, { type RequiredAtomFields } from "./ElementCell.svelte";
+	import ElementCell from "./ElementCell.svelte";
+	import ElementModal from "./ElementModal.svelte";
 
-	type MinimalAtom = Pick<Atom, "group" | "period" | "chemical_serie" | "atomic_number" | RequiredAtomFields>;
-	const { atoms }: { atoms: MinimalAtom[] } = $props();
+	const { atoms }: { atoms: Atom[] } = $props();
+	let selected: Atom | null = $state(null);
 
 	let maxGroup = 0;
 	let maxPeriod = 0;
@@ -12,11 +13,11 @@
 		if (a.period > maxPeriod) { maxPeriod = a.period; }
 	}
 
-	const mainTable: (MinimalAtom | null)[][] = Array.from({ length: maxPeriod }, () =>
+	const mainTable: (Atom | null)[][] = Array.from({ length: maxPeriod }, () =>
 		new Array(maxGroup).fill(null),
 	);
-	const lanthanides: MinimalAtom[] = [];
-	const actinides: MinimalAtom[] = [];
+	const lanthanides: Atom[] = [];
+	const actinides: Atom[] = [];
 
 	for (const a of atoms) {
 		const { period, group, chemical_serie } = a;
@@ -118,7 +119,7 @@
 						{:else}
 						<td>
 							{#if element}
-								<ElementCell {element} />
+								<ElementCell {element} onclick={() => { selected = element }} />
 							{/if}
 						</td>
 					{/if}
@@ -137,7 +138,7 @@
 			{#each lanthanides as element}
 				<td>
 					{#if element}
-						<ElementCell {element} />
+						<ElementCell {element} onclick={() => { selected = element }} />
 					{/if}
 				</td>
 			{/each}
@@ -146,11 +147,13 @@
 			{#each actinides as element}
 				<td>
 					{#if element}
-						<ElementCell {element} />
+						<ElementCell {element} onclick={() => { selected = element }} />
 					{/if}
 				</td>
 			{/each}
 		</tr>
 		</tbody>
 	</table>
+
+	<ElementModal element={selected} onclose={() => { selected = null }} />
 </div>

@@ -1,12 +1,12 @@
 <script lang="ts">
 import { math } from "@cartamd/plugin-math";
-  import { Pen, Trash } from "@lucide/svelte";
+import { Pen, Trash } from "@lucide/svelte";
 import { Carta, Markdown } from "carta-md";
 import DomPurify from "isomorphic-dompurify";
-import { katex, macros } from "$lib/mhchem";
+import { katex, macros } from "#lib/mhchem.js";
 
 const { data } = $props();
-const { reaction, userMetadata, reactionParam } = $derived(data);
+const { reaction, userData, reactionParam } = $derived(data);
 
 const carta = new Carta({
 	sanitizer: DomPurify.sanitize,
@@ -25,9 +25,9 @@ const embedUrl = $derived(`https://www.youtube-nocookie.com/embed/${reaction.you
 	iv_load_policy: '3' // disable annotations
 }));
 
-const equationPreview = katex.renderToString(`\\ce{${reaction.equation}}`);
+const equationPreview = $derived(katex.renderToString(`\\ce{${reaction.equation}}`));
 
-const updateUrl = `/atualizar-reacao/${reactionParam}`;
+const updateUrl = $derived(`/atualizar-reacao/${reactionParam}`);
 </script>
 
 <svelte:head>
@@ -35,7 +35,7 @@ const updateUrl = `/atualizar-reacao/${reactionParam}`;
   <meta name="description" content="Vídeos e informações diversas sobre a reação química: {reaction.name}.">
 </svelte:head>
 
-{#if userMetadata && reaction.user_id === userMetadata.suap_id}
+{#if userData && reaction.user_id === userData.suap_id}
 	<div class="flex justify-center items-center gap-4">
 		<a class="btn preset-filled-primary-50-950 px-2" href={updateUrl} title="Editar">
 			<Pen></Pen>
@@ -54,11 +54,17 @@ const updateUrl = `/atualizar-reacao/${reactionParam}`;
 <h1 id="reacao" class="h1 text-center">{reaction.name}</h1>
 <section>
 	<ul class="mx-auto w-fit list-inside list-disc space-y-1">
-		<li>Usuário: {reaction.user_name ?? "(anonimizado)"}</li>
-		<li>Classificações: {reaction.classifications.join(", ")}</li>
+		{#if reaction.user_name}
+			<li>Usuário: {reaction.user_name}</li>
+		{/if}
+		{#if reaction.classifications.length !== 0}
+			<li>Classificações: {reaction.classifications.join(", ")}</li>
+		{/if}
 		<li>Reagentes: {reaction.reactants.join(", ")}</li>
 		<li>Produtos: {reaction.products.join(", ")}</li>
-		<li>Catalisadores: {reaction.catalysts.join(", ")}</li>
+		{#if reaction.catalysts.length !== 0}
+			<li>Catalisadores: {reaction.catalysts.join(", ")}</li>
+		{/if}
 		<li>Equação química: {@html equationPreview}</li>
 	</ul>
 </section>
@@ -77,6 +83,6 @@ const updateUrl = `/atualizar-reacao/${reactionParam}`;
 <hr class="hr mt-4">
 
 <section class="mt-2">
-	<h2 id="descricao" class="h2 text-center mb-2">Instruções</h2>
+	<h2 id="descricao" class="h2 text-center mb-2">Descrição</h2>
 	<Markdown {carta} value={reaction.description} />
 </section>

@@ -1,6 +1,9 @@
 <script lang="ts">
-	export type RequiredAtomFields = SomeKeys<Atom, "chemical_serie" | "state" | "atomic_number" | "symbol" | "name" | "atomic_weight" | "short_lived">;
-	const { element, legend }: { element: Pick<Atom, RequiredAtomFields>; legend?: boolean } = $props();
+	const { element, legend, onclick }: { 
+		element: Atom; 
+		legend?: boolean; 
+		onclick?: () => void; 
+	} = $props();
 
 	const classes = [
 		"Elemento",
@@ -8,14 +11,22 @@
 		element.state ?? "Desconhecido"
 	];
 	if (legend) { classes.push("Legenda"); }
+	if (onclick) { classes.push("clickable"); }
 </script>
 
-<div class={classes}>
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<svelte:element
+	this={onclick ? "button" : "div"}
+	class={classes}
+	{onclick}
+	type={onclick ? "button" : undefined}
+	aria-haspopup={onclick ? "dialog" : undefined}
+>
 	<span class="atomic-number">{element.atomic_number}</span>
 	<abbr class="symbol">{element.symbol}</abbr>
 	<span class="name">{element.name}</span>
 	<span class="atomic-weight">{element.short_lived ? `(${element.atomic_weight})` : element.atomic_weight}</span>
-</div>
+</svelte:element>
 
 <style>
 	.Elemento > * {
@@ -118,5 +129,17 @@
 		border-color: var(--color);
 		border-style: solid;
 		border-width: 2px;
+	}
+
+	.clickable {
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.clickable:hover,
+	.clickable:focus-visible {
+		outline: 2px solid var(--color);
+		outline-offset: 1px;
 	}
 </style>

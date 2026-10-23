@@ -1,249 +1,248 @@
-import slugify from "@sindresorhus/slugify";
-import { fail, redirect } from "@sveltejs/kit";
-import { BYPASS_TOKEN } from "$env/static/private";
-import { parseReaction } from "$lib/mhchem";
-import { isEquationValid } from "$lib/utils";
+import slugify from "@sindresorhus/slugify"
+import { fail, redirect } from "@sveltejs/kit"
+import { superValidate } from "sveltekit-superforms"
+import { valibot } from "sveltekit-superforms/adapters"
+import * as v from "valibot"
+import { STATUS_CODE } from "#lib/consts.js"
+import { parseReaction } from "#lib/mhchem.js"
+import { isEquationValid, truthy, unwrap } from "#lib/utils.ts"
+import { BYPASS_TOKEN } from "$app/env/private"
 
 export const config = {
-	isr: false,
-};
+  isr: false,
+}
+
+const updateReactionSchema = v.objectAsync({
+  id: v.optional(
+    v.pipe(
+      v.string(),
+      v.trim(),
+      v.nonEmpty("O ID é obrigatório."),
+      v.digits("O ID da reação precisa ser um número válido."),
+      v.toNumber(),
+      v.minValue(0, "O ID não pode ser negativo."),
+      v.maxValue(32_767, "O ID é inválido."),
+    ),
+  ),
+  name: v.pipe(
+    v.string(),
+    v.trim(),
+    v.nonEmpty("O nome é obrigatório."),
+    v.minLength(3, "O nome deve ter pelo menos 3 caracteres."),
+    v.maxLength(70, "O nome não pode passar de 70 caracteres."),
+  ),
+
+  video_url: v.pipeAsync(
+    v.string(),
+    v.trim(),
+    v.nonEmpty("A URL do vídeo é obrigatória."),
+    v.minLength(20, "A URL do vídeo é muito curta para ser válida."),
+    v.maxLength(100, "A URL do vídeo é longa demais."),
+    v.rawTransform(({ dataset, addIssue, NEVER }) => {
+      const match = dataset.value.match(
+        /^(?:https?:\/\/)?(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)(?<videoId>[A-Za-z0-9_-]{11})(?=$|[?&#/])(?:[?&#/].*)?$/i,
+      )
+
+      if (!match?.groups?.videoId) {
+        addIssue({
+          message: "A URL do vídeo é inválida (não é uma URL do YouTube ou não tem um ID).",
+        })
+        return NEVER
+      }
+
+      return match.groups.videoId
+    }),
+    v.checkAsync(async id => {
+      const url = new URL("https://www.youtube.com/oembed")
+      url.searchParams.set("url", `https://www.youtube.com/watch?v=${id}`)
+      url.searchParams.set("format", "json")
+
+      try {
+        const res = await fetch(url)
+        return res.ok
+      } catch (e) {
+        console.error(e)
+        return false
+      }
+    }, "O vídeo não existe ou não está acessível no YouTube."),
+  ),
+  equation: v.pipe(
+    v.string(),
+    v.trim(),
+    v.nonEmpty("A equação é obrigatória."),
+    v.maxLength(200, "A equação não pode ter mais de 200 caracteres."),
+    v.check(isEquationValid, "A equação química é inválida."),
+    v.rawTransform(({ dataset, addIssue, NEVER }) => {
+      const reaction = parseReaction(dataset.value)
+      if (reaction.reactants.length === 0 || reaction.products.length === 0) {
+        addIssue({
+          message: "A equação química não tem reagentes ou produtos.",
+        })
+        return NEVER
+      }
+      return { ...reaction, equation: dataset.value }
+    }),
+  ),
+
+  description: v.optional(
+    v.pipe(
+      v.string(),
+      v.trim(),
+      v.maxLength(10_000, "A descrição não pode passar de 10.000 caracteres."),
+    ),
+  ),
+
+  classifications: v.optional(
+    v.pipe(
+      v.string(),
+      v.trim(),
+      v.maxLength(100, "A lista de classificações é longa demais."),
+      v.transform(val => (val ? val.split(",").map(s => s.trim()) : [])),
+    ),
+    "",
+  ),
+})
+
+const failure = (msg: string) =>
+  fail(STATUS_CODE.BAD_REQUEST, {
+    error: msg,
+  })
 
 export const actions = {
-	update: async ({ request, locals, fetch }) => {
-		const { session, user } = await locals.safeGetSession();
-		if (!(session && user)) {
-			return fail(400, {
-				error: "Usuario não está logado.",
-			});
-		}
+  update: async ({ request, locals: { supabase }, fetch }) => {
+    const { claims } = (await unwrap(() => supabase.auth.getClaims())) ?? {}
+    if (!claims) {
+      return failure("Usuario não está logado.")
+    }
 
-		const data = await request.formData();
+    const form = await superValidate(request, valibot(updateReactionSchema))
+    if (!form.valid) {
+      return fail(STATUS_CODE.BAD_REQUEST, { form })
+    }
 
-		const reactionId = data.get("id") as string;
-		const name = data.get("name") as string;
-		let videoUrlStr = data.get("video_url") as string;
-		if (!/^https?:\/\//i.test(videoUrlStr)) {
-			videoUrlStr = `https://${videoUrlStr}`;
-		}
-		const equation = data.get("equation") as string;
-		const instructions = data.get("instructions") as string;
-		const classifications = String(data.get("classifications") ?? "")
-			.split(",")
-			.map((s) => s.trim());
+    const { id, name, video_url: videoId, equation, description, classifications } = form.data
 
-		if (!(name && videoUrlStr && equation && instructions)) {
-			return fail(400, {
-				error: "Alguns campos não foram fornecidos.",
-			});
-		}
+    const userId = truthy(
+      await unwrap(() =>
+        supabase.from("suap_users").select("suap_id, auth_id").eq("auth_id", claims.sub).single(),
+      ),
+      "Usuário local não existe no servidor.",
+    )
 
-		let url: URL;
+    const reaction = id
+      ? await unwrap(() =>
+          supabase.from("reactions").select("id, user_id, slug").eq("id", id).single(),
+        )
+      : null
+    if (reaction && reaction.user_id !== userId.suap_id) {
+      return failure("Usuário não pode editar esta reação.")
+    }
 
-		try {
-			url = new URL(videoUrlStr);
-		} catch {
-			return fail(400, {
-				error: "URL de video inválida.",
-			});
-		}
+    const base = slugify(name)
+    let slug = base
 
-		const host = url.hostname.toLowerCase();
+    if (!reaction?.slug || slugify(name) !== slugify(reaction.slug)) {
+      const slugs =
+        (await unwrap(() => supabase.from("reactions").select("slug").like("slug", `${base}%`))) ??
+        []
 
-		if (
-			!["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"].includes(
-				host,
-			)
-		) {
-			return fail(400, {
-				error: "URL de video não é do YouTube.",
-			});
-		}
+      const used = new Set(slugs.map(row => row.slug))
+      if (used.has(base)) {
+        let n = 2
+        while (used.has(`${base}-${n}`)) {
+          n++
+        }
+        slug = `${base}-${n}`
+      }
+    } else {
+      slug = reaction.slug
+    }
 
-		let id: string | null = null;
+    await unwrap(() =>
+      supabase.from("reactions").upsert({
+        id,
+        name,
+        slug,
+        youtube_video_id: videoId,
+        equation: equation.equation,
+        description,
+        user_id: userId.suap_id,
+        classifications,
+        reactants: equation.reactants,
+        products: equation.products,
+        catalysts: equation.catalysts,
+      }),
+    )
 
-		if (host === "youtu.be") {
-			id = url.pathname.slice(1);
-		} else {
-			const path = url.pathname;
+    await fetch("/reacoes", {
+      method: "HEAD",
+      headers: {
+        "x-prerender-revalidate": BYPASS_TOKEN,
+      },
+    })
 
-			if (path === "/watch") {
-				id = url.searchParams.get("v");
-			} else if (path.startsWith("/shorts/")) {
-				id = path.split("/")[2];
-			} else if (path.startsWith("/live/")) {
-				id = path.split("/")[2];
-			} else if (path.startsWith("/embed/")) {
-				id = path.split("/")[2];
-			}
-		}
+    const finalUrl = `/reacao/${slug}`
+    await fetch(finalUrl, {
+      method: "HEAD",
+      headers: {
+        "x-prerender-revalidate": BYPASS_TOKEN,
+      },
+    })
 
-		// YouTube video IDs are currently 11 characters.
-		if (
-			!id ||
-			id.length < 5 ||
-			id.length > 20 ||
-			!/^[A-Za-z0-9_-]+$/.test(id)
-		) {
-			return fail(400, {
-				error: "ID do video não parece válido.",
-			});
-		}
+    if (reaction && reaction.slug !== slug) {
+      await fetch(`/reacao/${reaction.slug}`, {
+        method: "HEAD",
+        headers: {
+          "x-prerender-revalidate": BYPASS_TOKEN,
+        },
+      })
+    }
 
-		if (!isEquationValid(equation)) {
-			return fail(400, {
-				error: "Equação química inválida.",
-			});
-		}
+    redirect(STATUS_CODE.SEE_OTHER, "/reacoes")
+  },
+  delete: async ({ locals: { supabase }, params, fetch }) => {
+    const reactionSlug = truthy(params.reacao, 'O parâmetro "reacao" não foi fornecido.')
 
-		const reaction = parseReaction(equation);
-		if (
-			!reaction ||
-			reaction.reactants.length === 0 ||
-			reaction.products.length === 0
-		) {
-			return fail(400, {
-				error: "Equação química não contém reagentes ou produtos.",
-			});
-		}
+    const { claims } = (await unwrap(() => supabase.auth.getClaims())) ?? {}
+    if (!claims) {
+      return failure("Usuario não está logado.")
+    }
 
-		const { data: userId } = await locals.supabase
-			.from("suap_users")
-			.select("suap_id, auth_id")
-			.eq("auth_id", user.id)
-			.single();
+    const userId = truthy(
+      await unwrap(() =>
+        supabase.from("suap_users").select("suap_id, auth_id").eq("auth_id", claims.sub).single(),
+      ),
+      "Usuário local não existe no servidor.",
+    )
 
-		let oldSlug: string | null = null;
+    const reaction = await unwrap(() =>
+      supabase.from("reactions").select("id, user_id, slug").eq("slug", reactionSlug).single(),
+    )
+    if (!reaction) {
+      return failure("A reação não existe no servidor.")
+    }
+    if (reaction.user_id !== userId.suap_id) {
+      return failure("Usuário não pode editar esta reação.")
+    }
 
-		if (reactionId) {
-			const { data: oldReaction } = await locals.supabase
-				.from("reactions")
-				.select("id, user_id, slug")
-				.eq("id", reactionId)
-				.single();
-			if (oldReaction?.user_id !== userId.suap_id) {
-				return fail(400, {
-					error: "Usuário não pode editar esta reação.",
-				});
-			}
-			oldSlug = oldReaction.slug;
-		}
+    await unwrap(() => supabase.from("reactions").delete().eq("id", reaction.id))
 
-		const base = slugify(name);
-		let slug: string = base;
+    await fetch("/reacoes", {
+      method: "HEAD",
+      headers: {
+        "x-prerender-revalidate": BYPASS_TOKEN,
+      },
+    })
 
-		// Only calculate a completely new unique slug if the name altered (or if it's a new entry)
-		if (!oldSlug || slugify(name) !== slugify(oldSlug)) {
-			const { data: slugs, error: slugError } = await locals.supabase
-				.from("reactions")
-				.select("slug")
-				.like("slug", `${base}%`);
+    try {
+      await fetch(`/reacao/${params.reacao}`, {
+        method: "HEAD",
+        headers: {
+          "x-prerender-revalidate": BYPASS_TOKEN,
+        },
+      })
+    } catch {}
 
-			if (slugError) {
-				throw slugError;
-			}
-
-			const used = new Set(slugs.map((row: { slug: string }) => row.slug));
-			if (used.has(base)) {
-				let n = 2;
-				while (used.has(`${base}-${n}`)) {
-					n++;
-				}
-				slug = `${base}-${n}`;
-			}
-		} else {
-			slug = oldSlug; // Keep existing slug on clean edits
-		}
-
-		if (!slug) {
-			throw new Error("Could not generate slug.");
-		}
-
-		const { error } = await locals.supabase.from("reactions").upsert({
-			id: reactionId ? reactionId : undefined,
-			name,
-			slug,
-			youtube_video_id: id,
-			equation,
-			description: instructions,
-			user_id: userId.suap_id,
-			classifications,
-			reactants: reaction.reactants,
-			products: reaction.products,
-			catalysts: reaction.catalysts,
-		});
-
-		if (!error) {
-			await fetch("/reacoes", {
-				method: "HEAD",
-				headers: {
-					"x-prerender-revalidate": BYPASS_TOKEN,
-				},
-			});
-
-			const finalUrl = `/reacao/${slug}`;
-
-			await fetch(finalUrl, {
-				method: "HEAD",
-				headers: {
-					"x-prerender-revalidate": BYPASS_TOKEN,
-				},
-			});
-
-			if (oldSlug && oldSlug !== slug) {
-				await fetch(`/reacao/${oldSlug}`, {
-					method: "HEAD",
-					headers: {
-						"x-prerender-revalidate": BYPASS_TOKEN,
-					},
-				});
-			}
-
-			redirect(303, `${finalUrl}#demonstracao`);
-		}
-	},
-	delete: async ({ locals, params, fetch }) => {
-		const { session, user } = await locals.safeGetSession();
-		if (!(session && user)) {
-			return fail(400, {
-				error: "Usuario não está logado.",
-			});
-		}
-
-		const { data: userId } = await locals.supabase
-			.from("suap_users")
-			.select("suap_id, auth_id")
-			.eq("auth_id", user.id)
-			.single();
-
-		const { data: reaction } = await locals.supabase
-			.from("reactions")
-			.select("id, user_id, slug")
-			.eq("slug", params.reacao)
-			.single();
-		if (reaction?.user_id !== userId.suap_id) {
-			return fail(400, {
-				error: "Usuário não pode editar esta reação.",
-			});
-		}
-
-		await locals.supabase.from("reactions").delete().eq("id", reaction.id);
-
-		await fetch("/reacoes", {
-			method: "HEAD",
-			headers: {
-				"x-prerender-revalidate": BYPASS_TOKEN,
-			},
-		});
-
-		try {
-			await fetch(`/reacao/${params.reacao}`, {
-				method: "HEAD",
-				headers: {
-					"x-prerender-revalidate": BYPASS_TOKEN,
-				},
-			});
-		} catch {}
-
-		redirect(303, "/reacoes");
-	},
-};
+    redirect(STATUS_CODE.SEE_OTHER, "/reacoes")
+  },
+}

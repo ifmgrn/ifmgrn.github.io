@@ -1,6 +1,6 @@
-import { json } from "@sveltejs/kit";
+import { unwrap } from "#lib/utils.ts"
 
 export async function POST({ locals: { supabase } }) {
-	await supabase.auth.signOut({ scope: "local" });
-	return json({});
+  await unwrap(() => supabase.auth.signOut({ scope: "local" }))
+  return Response.json({})
 }

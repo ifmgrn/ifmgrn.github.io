@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { MoonIcon, SunIcon } from '@lucide/svelte';
+	import { MoonIcon, SunIcon } from '@lucide/svelte';
 	import { Switch } from '@skeletonlabs/skeleton-svelte';
-    import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	let checked: null | boolean = $state(null);
 

@@ -1,18 +1,22 @@
 export const STATUS_CODE = {
-	NO_CONTENT: 204,
-	FOUND: 302,
-	SEE_OTHER: 303,
-	PERMANENT_REDIRECT: 308,
-	BAD_REQUEST: 400,
-	FORBIDDEN: 403,
-	NOT_FOUND: 404,
-} as const;
+  NO_CONTENT: 204,
+  FOUND: 302,
+  SEE_OTHER: 303,
+  PERMANENT_REDIRECT: 308,
+  BAD_REQUEST: 400,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+} as const
 
 export const URL_PARAMS = {
-	SEARCH_REACTION: "q",
-	SEARCH_REACTANT: "r",
-	SEARCH_PRODUCT: "p",
-	SEARCH_CLASSIFICATION: "c",
+  SEARCH_REACTION: "q",
+  SEARCH_REACTANT: "r",
+  SEARCH_PRODUCT: "p",
+  SEARCH_CLASSIFICATION: "c",
 
-	THEME: "tema",
-} as const;
+  THEME: "tema",
+} as const
+
+export const ERROR = {
+  USER_LOGGED_IN: "Usuário já está logado.",
+} as const

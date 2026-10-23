@@ -1,14 +1,15 @@
 <script lang="ts">
-	import ReactionsGrid from "$lib/components/Reactions/ReactionsGrid.svelte";
-	import { URL_PARAMS } from "$lib/consts.js";
+  import { Plus, Search } from "@lucide/svelte";
+	import ReactionsGrid from "#lib/components/Reactions/ReactionsGrid.svelte";
+	import { URL_PARAMS } from "#lib/consts.ts";
 
-	let { data } = $props();
+	const { data } = $props();
 </script>
 
 <svelte:head>
   <link rel="preconnect" href="https://i.ytimg.com" />
   <link rel="preconnect" href="https://www.youtube-nocookie.com" />
-  <title>Banco de Dados de Reações Químicas</title>
+  <title>Reações Químicas</title>
   <meta name="description" content="Um banco de dados de reações químicas onde você pode pesquisar, visualizar vídeos e ver detalhes sobre reações químicas.">
 </svelte:head>
 
@@ -45,12 +46,14 @@
 		>
 	</label>
 		
-	<button type="submit" aria-label="Pesquisar" class="btn preset-filled-primary-50-950 w-fit h-fit">
-		>
+	<button type="submit" aria-label="Pesquisar" class="btn preset-filled-primary-50-950 w-fit h-fit p-1.5">
+		<Search />
 	</button>
 
-	{#if data.session}
-		<a href="/atualizar-reacao" aria-label="Adicionar reação" class="btn preset-filled-surface-100-900">+</a>
+	{#if data.userData}
+		<a href="/atualizar-reacao" aria-label="Adicionar reação" class="btn preset-filled-surface-100-900 p-1.5">
+			<Plus />
+		</a>
 	{/if}
 </form>
 

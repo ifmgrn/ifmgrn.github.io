@@ -2,23 +2,25 @@
 	import YouTube from "../YouTube.svelte";
 
 	const { reaction }: { reaction: Reaction } = $props();
-	const fields = [
+	const fields = $derived([
 		["Reação:", reaction.name],
-		["Usuário:", reaction.user_name ?? "(anonimizado)"],
-		["Classificações:", reaction.classifications.join(", ")],
+		["Usuário:", reaction.user_name ?? null],
+		["Classificações:", reaction.classifications.length === 0 ? null : reaction.classifications.join(", ")],
 		["Reagentes:", reaction.reactants.join(", ")],
 		["Produtos:", reaction.products.join(", ")],
-		["Catalisadores:", reaction.catalysts.join(", ")],
+		["Catalisadores:", reaction.catalysts.length === 0 ? null : reaction.catalysts.join(", ")],
 		["Equação:", reaction.equation]
-	];
+	]);
 </script>
 
-<div role="listitem" aria-label={reaction.name} class="flex flex-col">
+<li class="flex flex-col list-none">
 	<YouTube videoId={reaction.youtube_video_id} videoTitle={reaction.name} />
 	<a href="/reacao/{reaction.slug}#demonstracao" class="grid mt-1 grid-cols-[auto_1fr] gap-x-2 mx-auto">
 		{#each fields as field}
-			<span class="font-bold text-right">{field[0]}</span>
-			<span class="text-left">{field[1]}</span>
+			{#if field[1]}
+				<span class="font-bold text-right">{field[0]}</span>
+				<span class="text-left">{field[1]}</span>
+			{/if}
 		{/each}
 	</a>
-</div>
+</li>

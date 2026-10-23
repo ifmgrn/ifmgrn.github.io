@@ -22,6 +22,7 @@
 		sandbox="allow-scripts allow-same-origin"
 		src={embedUrl}></iframe>
 	{:else}
+		<!--
 		<a
 			href="https://youtube.com/watch?v={videoId}"
 			target="_blank"
@@ -38,11 +39,28 @@
 			<img referrerpolicy="origin" loading="lazy" alt="Thumbnail do vídeo: {videoTitle}" src="https://i.ytimg.com/vi/{videoId}/hqdefault.jpg" class="absolute w-full h-full object-cover">
 			<span class="absolute top-1/2 left-1/2 w-17 h-12 -translate-x-1/2 -translate-y-1/2 bg-youtube-icon"></span>
 		</a>
+	-->
+	<button
+		type="button"
+		title={videoTitle}
+		aria-label="Reproduzir vídeo: {videoTitle}"
+		class="absolute inset-0"
+		onclick={() => {
+			isIframeLoaded = true;
+		}}
+	>
+		<img
+			referrerpolicy="origin"
+			loading="lazy"
+			alt=""
+			src="https://i.ytimg.com/vi/{videoId}/hqdefault.jpg"
+			class="w-full h-full object-cover"
+		/>
+		<span
+			aria-hidden="true"
+			class="absolute top-1/2 left-1/2 w-17 h-12 -translate-x-1/2 -translate-y-1/2 bg-youtube-icon"
+		></span>
+	</button>
 	{/if}
 </div>
 
-<style>
-	.bg-youtube-icon {
-		background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55c-2.93.78-4.63 3.26-5.42 6.19C.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="red"/><path d="M45 24 27 14v20" fill="white"/></svg>');
-	}
-</style>

@@ -2,8 +2,8 @@
 import { math } from "@cartamd/plugin-math";
 import { Carta, MarkdownEditor } from "carta-md";
 import DomPurify from "isomorphic-dompurify";
-import { katex, macros } from "$lib/mhchem";
-import { isEquationValid } from "$lib/utils";
+import { katex, macros } from "#lib/mhchem.js";
+import { isEquationValid } from "#lib/utils.ts";
 
 const { data } = $props();
 const { reaction } = $derived(data);
@@ -20,15 +20,12 @@ const carta = new Carta({
 let equationPreviewEl: HTMLElement;
 let equationInputEl: HTMLInputElement;
 
-let initialEquationPreview = "";
-if (reaction?.equation) {
-    initialEquationPreview = katex.renderToString(`\\ce{${reaction.equation}}`);
-}
+const initialEquationPreview = $derived(reaction?.equation ? katex.renderToString(`\\ce{${reaction.equation}}`) : "");
 </script>
 
 <svelte:head>
-  <title>Adicionar Reação Química</title>
-  <meta name="description" content="Adicione uma nova reação química ao banco de dados.">
+  <title>{ reaction ? `Atualizar ${reaction.name}` : "Adicionar Reação Química" }</title>
+  <meta name="description" content="Adicione ou atualize uma reação química no banco de dados.">
 </svelte:head>
 
 <form method="POST" onsubmit={(evt) => {
@@ -74,10 +71,13 @@ if (reaction?.equation) {
         <input name="classifications" class="input" placeholder="Exemplo: oxirredução, síntese" value={reaction?.classifications.join(", ")}>
     </label>
 
+    <!-- biome-ignore lint/a11y/noLabelWithoutControl: MarkdownEditor has textarea -->
     <label class="label">
-        <span class="label-text">Instruções:</span>
-        <MarkdownEditor {carta} value={reaction?.description} textarea={{name: "instructions"}} />
+        <span class="label-text">Descrição:</span>
+        <MarkdownEditor {carta} value={reaction?.description} textarea={{name: "description"}} />
     </label>
 
-    <button type="submit" class="btn preset-filled-primary-50-950 mx-auto block">Atualizar reação</button>
+    <button type="submit" class="btn preset-filled-primary-50-950 mx-auto block">
+        {reaction ? "Atualizar" : "Adicionar"} reação
+    </button>
 </form>
